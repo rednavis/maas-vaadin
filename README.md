@@ -4,3 +4,9 @@
 
 # maas-vaadin
 Client of the Material Assets management system
+
+`./gradlew clean build`
+
+`./gradlew bootRun`
+
+Open http://localhost:8080/shared
