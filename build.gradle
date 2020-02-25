@@ -1,57 +1,96 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '2.2.4.RELEASE' apply false
+    id 'com.google.cloud.tools.jib' version '2.0.0' apply false
+    id 'com.vaadin' version '0.5.0' apply false
 }
 
-apply plugin: 'project-report' // ./gradlew clean htmlDependencyReport
-apply plugin: 'io.spring.dependency-management' // ./gradlew clean htmlDependencyReport
-apply plugin: 'jacoco'
-
-apply from: "${rootDir}/gradle/java.gradle"
-apply from: "${rootDir}/gradle/checkstyle.gradle"
-
 ext {
+    maasVaadinVersion = '0.0.1-SNAPSHOT'
     lombokVersion = '1.18.12'
     mapstructVersion = '1.3.1.Final'
+    springBootVersion = '2.2.4.RELEASE'
+    vaadinVersion = '14.1.17'
     jupiterVersion = '5.6.0'
 }
 
-repositories {
-    jcenter()
-    mavenCentral()
-}
+allprojects {
+    apply plugin: 'project-report'
+    // needed because of multi-module configuration
+    apply plugin: 'jacoco'
+    apply plugin: 'io.spring.dependency-management'
 
-dependencyManagement {
-    dependencies {
-        //Server
-        dependency "org.projectlombok:lombok:${lombokVersion}"
-        dependency "org.mapstruct:mapstruct:${mapstructVersion}"
-        dependency "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
 
-        //Test
-        dependency "org.junit.jupiter:junit-jupiter:${jupiterVersion}"
+    dependencyManagement {
+        dependencies {
+            //Server
+            dependency "org.projectlombok:lombok:${lombokVersion}"
+            dependency "org.mapstruct:mapstruct:${mapstructVersion}"
+            dependency "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+            dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+
+            imports {
+                mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+            }
+
+            //Test
+            dependency "org.junit.jupiter:junit-jupiter:${jupiterVersion}"
+            dependency "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+        }
     }
 }
 
-dependencies {
-    implementation 'com.rednavis:maas-shared'
+// assumed that all subprojects are java-based modules
+subprojects {
+    apply from: "${rootDir}/gradle/java.gradle"
+    apply from: "${rootDir}/gradle/checkstyle.gradle"
 
-    implementation 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.mapstruct:mapstruct'
-    annotationProcessor 'org.mapstruct:mapstruct-processor'
+    dependencies {
+        implementation 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        implementation 'org.mapstruct:mapstruct'
+        annotationProcessor 'org.mapstruct:mapstruct-processor'
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+        testImplementation('org.junit.jupiter:junit-jupiter') {
+            exclude group: 'junit', module: 'junit'
+        }
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'junit', module: 'junit'
+        }
+    }
 
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            html.enabled false
+        }
+    }
 }
 
-jacocoTestReport {
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
     reports {
         xml.enabled true
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
         html.enabled false
         csv.enabled false
     }
+}
+
+// https://github.com/codecov/example-gradle#-do-you-support-multi-module-projects
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }
 
 wrapper {

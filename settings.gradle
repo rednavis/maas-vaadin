@@ -4,3 +4,5 @@ includeBuild('maas-shared') {
         substitute module('com.rednavis:maas-shared') with project(':')
     }
 }
+include 'server'
+include 'client'
