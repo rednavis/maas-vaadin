@@ -39,6 +39,12 @@ target
 # Ignore Node output directories
 node
 
+# Ignore Front build
+package.json
+package-lock.json
+webpack.config.js
+webpack.generated.js
+
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
