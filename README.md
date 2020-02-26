@@ -78,7 +78,13 @@ can download it for you. To build your app for production in CI, just run:
 ```
 
 ## Create dependency report
+
 `./gradlew clean htmlDependencyReport`
 
+## Update dependency
+
+`./gradlew dependencyUpdates`
+
 ## Create docker image
+
 `./gradlew clean bootJar jibDockerBuild`
