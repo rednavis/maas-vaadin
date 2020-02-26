@@ -1,8 +1,8 @@
 package com.rednavis.backend.service;
 
-import static com.rednavis.shared.RestUrl.AUTH_URL;
-import static com.rednavis.shared.RestUrl.AUTH_URL_TEST_GET;
-import static com.rednavis.shared.RestUrl.AUTH_URL_TEST_POST;
+import static com.rednavis.shared.RestUrlUtils.AUTH_URL;
+import static com.rednavis.shared.RestUrlUtils.AUTH_URL_TEST_GET;
+import static com.rednavis.shared.RestUrlUtils.AUTH_URL_TEST_POST;
 
 import com.rednavis.shared.dto.auth.TestRequest;
 import com.rednavis.shared.dto.auth.TestResponse;
@@ -25,8 +25,9 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public TestResponse testPost() {
-    TestRequest testRequest = new TestRequest();
-    testRequest.setValueInput("Hello World!");
+    TestRequest testRequest = TestRequest.builder()
+        .valueInput("Hello World!")
+        .build();
 
     String url = createUrl(AUTH_URL_TEST_POST);
     log.info("POST: {}", url);
