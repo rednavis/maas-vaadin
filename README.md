@@ -24,11 +24,17 @@ Run the following command in this repo:
 ./gradlew clean vaadinPrepareFrontend bootRun
 ```
 
+or
+
+```bash
+./gradlew devRun
+```
+
 Now you can open the [http://localhost:8080](http://localhost:8080) with your browser.
 
 > If you do not have node.js installed locally, please run `./gradlew vaadinPrepareNode` once.
 > The task will download a local node.js distribution to your project folder, into the `node/` folder.
-
+> Or `./gradlew devNodeRun`
 ### Running With Spring Boot from your IDE In Development Mode
 
 Run the following command in this repo, to create necessary Vaadin config files:
@@ -48,7 +54,7 @@ Now you can open the [http://localhost:8080](http://localhost:8080) with your br
 Run the following command in this repo:
 
 ```bash
-./gradlew
+./gradlew production
 ```
 
 That will build this app in production mode as a runnable jar archive; please find the

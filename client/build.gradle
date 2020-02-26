@@ -28,3 +28,22 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
 }
+
+task production{
+    dependsOn clean
+    dependsOn vaadinBuildFrontend
+    dependsOn build
+}
+
+task devRun{
+    dependsOn clean
+    dependsOn vaadinPrepareFrontend
+    dependsOn bootRun
+}
+
+task devNodeRun{
+    dependsOn clean
+    dependsOn vaadinPrepareNode
+    dependsOn vaadinPrepareFrontend
+    dependsOn bootRun
+}

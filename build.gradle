@@ -93,6 +93,8 @@ codeCoverageReport.dependsOn {
     subprojects*.test
 }
 
+//defaultTasks("clean", "vaadinBuildFrontend", "build")
+
 wrapper {
     gradleVersion = "6.2"
 }
