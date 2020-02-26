@@ -13,4 +13,10 @@ public class ConstantUtils {
 
   public static final String PAGE_LOGIN_TITLE = "Login";
   public static final String PAGE_LOGIN_URL = "loginView";
+
+  public static final String PAGE_DASHBOARD_TITLE = "Dashboard";
+  public static final String PAGE_DASHBOARD_URL = "dashboardView";
+
+  public static final String ACCESS_DENIED_TITLE = "Access denied";
+  public static final String NOT_FOUND_TITLE = "Page was not found";
 }

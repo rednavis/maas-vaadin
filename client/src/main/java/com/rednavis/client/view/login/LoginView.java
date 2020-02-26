@@ -4,24 +4,76 @@ import static com.rednavis.client.ConstantUtils.PAGE_LOGIN_TITLE;
 import static com.rednavis.client.ConstantUtils.PAGE_LOGIN_URL;
 import static com.rednavis.client.ConstantUtils.VIEW_PORT;
 
+import com.rednavis.backend.service.AuthService;
+import com.rednavis.client.security.SecurityUtils;
+import com.rednavis.client.view.dashboard.DashboardView;
+import com.rednavis.shared.dto.auth.SignInRequest;
+import com.rednavis.shared.dto.auth.SignInResponse;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.page.Viewport;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
 @PageTitle(PAGE_LOGIN_TITLE)
 @Route(PAGE_LOGIN_URL)
 @RouteAlias(value = "")
 @Tag("login-view")
-@JsModule("./src/view/login/login-view.js")
+//@JsModule("./src/view/login/login-view.js")
 @Viewport(VIEW_PORT)
-public class LoginView extends PolymerTemplate<TemplateModel> {
+@Slf4j
+public class LoginView extends LoginOverlay implements AfterNavigationObserver, BeforeEnterObserver {
 
+  private final AuthService authService;
+
+  /**
+   * LoginView.
+   *
+   * @param authService authService
+   */
+  @Autowired
+  public LoginView(AuthService authService) {
+    this.authService = authService;
+
+    LoginForm loginForm = new LoginForm();
+    loginForm.addLoginListener(login -> {
+      SignInRequest signInRequest = SignInRequest.builder()
+          .email(login.getUsername())
+          .password(login.getPassword())
+          .build();
+      SignInResponse signInResponse = authService.signIn(signInRequest);
+      log.info("SignInResponse: {}", signInResponse);
+      boolean isAuthenticated = false;
+      if (isAuthenticated) {
+        getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
+      } else {
+        loginForm.setError(true);
+      }
+    });
+  }
+
+  @Override
+  public void beforeEnter(BeforeEnterEvent event) {
+    if (SecurityUtils.isUserLoggedIn()) {
+      event.forwardTo(DashboardView.class);
+    } else {
+      setOpened(true);
+    }
+  }
+
+  @Override
+  public void afterNavigation(AfterNavigationEvent event) {
+    setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
+  }
 }
