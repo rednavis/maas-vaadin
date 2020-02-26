@@ -33,6 +33,9 @@ npm-debug.log
 # Ignore Gradle build output directory
 build
 
+# Ignore Maven build output directory
+target
+
 # Ignore Node output directories
 node
 

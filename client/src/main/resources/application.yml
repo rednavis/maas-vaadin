@@ -1,1 +1,3 @@
-
+maas:
+  api:
+    server: http://localhost:8081

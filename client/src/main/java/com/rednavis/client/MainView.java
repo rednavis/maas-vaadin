@@ -1,5 +1,6 @@
 package com.rednavis.client;
 
+import com.rednavis.backend.service.AuthService;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -9,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The main view contains a button and a click listener.
@@ -19,17 +21,21 @@ import com.vaadin.flow.server.PWA;
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
 
+  private final AuthService authService;
+
   /**
    * MainView.
    */
-  public MainView() {
+  @Autowired
+  public MainView(AuthService authService) {
+    this.authService = authService;
+
     // Use TextField for standard text input
     TextField textField = new TextField("Your name");
 
     // Button click listeners can be defined as lambda expressions
     GreetService greetService = new GreetService();
-    Button button = new Button("Say hello",
-        e -> Notification.show(greetService.greet(textField.getValue())));
+    Button button = new Button("Say hello", e -> Notification.show(greetService.greet(textField.getValue())));
 
     // Theme variants give you predefined extra styles for components.
     // Example: Primary button is more prominent look.
@@ -42,6 +48,8 @@ public class MainView extends VerticalLayout {
     // Use custom CSS classes to apply styling. This is defined in shared-styles.css.
     addClassName("centered-content");
 
-    add(textField, button);
+    Button buttonTestPost = new Button("Test post", e -> Notification.show(authService.testPost().toString()));
+    Button buttonTestGet = new Button("Test get", e -> Notification.show(authService.testGet().toString()));
+    add(textField, button, buttonTestPost, buttonTestGet);
   }
 }
