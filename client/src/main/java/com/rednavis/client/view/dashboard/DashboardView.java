@@ -30,10 +30,8 @@ public class DashboardView extends Div {
   public DashboardView(AuthService authService) {
     this.authService = authService;
 
-    Button buttonTestPost = new Button("Test post", e -> Notification.show(authService.testPost().toString()));
-    buttonTestPost.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    Button buttonTestGet = new Button("Test get", e -> Notification.show(authService.testGet().toString()));
-    buttonTestPost.addThemeVariants(ButtonVariant.LUMO_ERROR);
-    add(buttonTestPost, buttonTestGet);
+    Button btnCurrentUser = new Button("Current User", e -> Notification.show(authService.getCurrentUser().toString()));
+    btnCurrentUser.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    add(btnCurrentUser);
   }
 }

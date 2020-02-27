@@ -1,21 +1,17 @@
 package com.rednavis.backend.service;
 
-import com.rednavis.shared.dto.auth.SignInRequest;
-import com.rednavis.shared.dto.auth.SignInResponse;
-import com.rednavis.shared.dto.auth.SignUpRequest;
-import com.rednavis.shared.dto.auth.SignUpResponse;
-import com.rednavis.shared.dto.auth.TestResponse;
+import com.rednavis.shared.rest.ApiResponse;
+import com.rednavis.shared.rest.request.SignInRequest;
+import com.rednavis.shared.rest.request.SignUpRequest;
+import com.rednavis.shared.rest.response.SignInResponse;
+import com.rednavis.shared.rest.response.SignUpResponse;
 import com.rednavis.shared.security.CurrentUser;
 
 public interface AuthService {
 
-  TestResponse testPost();
+  ApiResponse<CurrentUser> getCurrentUser();
 
-  TestResponse testGet();
+  ApiResponse<SignInResponse> signIn(SignInRequest signInRequest);
 
-  CurrentUser getCurrentUser();
-
-  SignInResponse signIn(SignInRequest signInRequest);
-
-  SignUpResponse signUp(SignUpRequest signUpRequest);
+  ApiResponse<SignUpResponse> signUp(SignUpRequest signUpRequest);
 }

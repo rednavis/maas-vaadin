@@ -3,14 +3,11 @@ package com.rednavis.client.security;
 import static com.rednavis.client.ConstantUtils.PAGE_DASHBOARD_URL;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 /**
  * Configures spring security. Doing the following:
@@ -27,15 +24,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   private static final String LOGIN_URL = "/loginView";
   private static final String LOGOUT_SUCCESS_URL = "/" + PAGE_DASHBOARD_URL;
 
-  private final UserDetailsService userDetailsService;
+  //private final UserDetailsService userDetailsService;
 
   //@Autowired
   //private PasswordEncoder passwordEncoder;
 
-  @Autowired
-  public SecurityConfiguration(UserDetailsService userDetailsService) {
-    this.userDetailsService = userDetailsService;
-  }
+  //@Autowired
+  //public SecurityConfiguration(UserDetailsService userDetailsService) {
+  //  this.userDetailsService = userDetailsService;
+  //}
 
   ///**
   // * The password encoder to use when encrypting passwords.
@@ -70,11 +67,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     List<String> roles = List.of("ADMIN", "USER");
-    // Not using Spring CSRF here to be able to use plain HTML for the login page
-    http.csrf().disable()
 
-        // Register our CustomRequestCache, that saves unauthorized access attempts, so
-        // the user is redirected after login.
+    //   Not using Spring CSRF here to be able to use plain HTML for the login page
+    http.csrf().disable()
+        .csrf().disable()
+        .formLogin().disable()
+
+        //     Register our CustomRequestCache, that saves unauthorized access attempts, so
+        //     the user is redirected after login.
         .requestCache().requestCache(new CustomRequestCache())
 
         // Restrict access to our application.
@@ -82,17 +82,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // Allow all flow internal requests.
         .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+        .mvcMatchers(LOGIN_URL).permitAll()
 
         // Allow all requests by logged in users.
         .anyRequest().hasAnyAuthority(roles.toArray(String[]::new))
 
         // Configure the login page.
-        .and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-        .failureUrl(LOGIN_FAILURE_URL)
+        //.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
+        //.failureUrl(LOGIN_FAILURE_URL)
 
         // Register the success handler that redirects users to the page they last tried
         // to access
-        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+        //.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
         // Configure logout
         .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);

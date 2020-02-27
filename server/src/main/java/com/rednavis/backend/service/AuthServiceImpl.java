@@ -1,17 +1,14 @@
 package com.rednavis.backend.service;
 
-import static com.rednavis.shared.RestUrlUtils.AUTH_URL;
-import static com.rednavis.shared.RestUrlUtils.AUTH_URL_CURRENTUSER;
-import static com.rednavis.shared.RestUrlUtils.AUTH_URL_SIGNIN;
-import static com.rednavis.shared.RestUrlUtils.AUTH_URL_TEST_GET;
-import static com.rednavis.shared.RestUrlUtils.AUTH_URL_TEST_POST;
+import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL;
+import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_CURRENTUSER;
+import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_SIGNIN;
 
-import com.rednavis.shared.dto.auth.SignInRequest;
-import com.rednavis.shared.dto.auth.SignInResponse;
-import com.rednavis.shared.dto.auth.SignUpRequest;
-import com.rednavis.shared.dto.auth.SignUpResponse;
-import com.rednavis.shared.dto.auth.TestRequest;
-import com.rednavis.shared.dto.auth.TestResponse;
+import com.rednavis.shared.rest.ApiResponse;
+import com.rednavis.shared.rest.request.SignInRequest;
+import com.rednavis.shared.rest.request.SignUpRequest;
+import com.rednavis.shared.rest.response.SignInResponse;
+import com.rednavis.shared.rest.response.SignUpResponse;
 import com.rednavis.shared.security.CurrentUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,49 +28,27 @@ public class AuthServiceImpl implements AuthService {
   private RestTemplateBuilder restTemplateBuilder;
 
   @Override
-  public TestResponse testPost() {
-    TestRequest testRequest = TestRequest.builder()
-        .valueInput("Hello World!")
-        .build();
-
-    String url = createUrl(AUTH_URL_TEST_POST);
-    log.info("POST: {}", url);
-    ResponseEntity<TestResponse> result = restTemplateBuilder.build()
-        .postForEntity(url, testRequest, TestResponse.class);
-    return result.getBody();
-  }
-
-  @Override
-  public TestResponse testGet() {
-    String url = createUrl(AUTH_URL_TEST_GET);
-    log.info("GET: {}", url);
-    ResponseEntity<TestResponse> result = restTemplateBuilder.build()
-        .getForEntity(url, TestResponse.class);
-    return result.getBody();
-  }
-
-  @Override
-  public CurrentUser getCurrentUser() {
+  public ApiResponse<CurrentUser> getCurrentUser() {
     String url = createUrl(AUTH_URL_CURRENTUSER);
     log.info("GET: {}", url);
-    ResponseEntity<CurrentUser> result = restTemplateBuilder.build()
-        .getForEntity(url, CurrentUser.class);
+    ResponseEntity<ApiResponse> result = restTemplateBuilder.build()
+        .getForEntity(url, ApiResponse.class);
     return result.getBody();
   }
 
   @Override
-  public SignInResponse signIn(SignInRequest signInRequest) {
+  public ApiResponse<SignInResponse> signIn(SignInRequest signInRequest) {
     String url = createUrl(AUTH_URL_SIGNIN);
     log.info("POST: {}", url);
-    ResponseEntity<SignInResponse> result = restTemplateBuilder.build()
-        .postForEntity(url, signInRequest, SignInResponse.class);
+    ResponseEntity<ApiResponse> result = restTemplateBuilder.build()
+        .postForEntity(url, signInRequest, ApiResponse.class);
     return result.getBody();
   }
 
   @Override
-  public SignUpResponse signUp(SignUpRequest signUpRequest) {
-    return SignUpResponse.builder()
-        .build();
+  public ApiResponse<SignUpResponse> signUp(SignUpRequest signUpRequest) {
+    return ApiResponse.createSuccessResponse(SignUpResponse.builder()
+        .build());
   }
 
   private String createUrl(String restPoint) {
