@@ -1,3 +1,8 @@
 maas:
   api:
     server: http://localhost:8081
+
+# JWT Properties
+jwt:
+  accessToken:
+    secretKey: vgYU2EZhLbaOqAgcwcnRlHqw4gJsM8Hu

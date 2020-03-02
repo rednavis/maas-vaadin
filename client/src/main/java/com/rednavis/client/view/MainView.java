@@ -58,19 +58,4 @@ public class MainView extends AppLayout {
     a.add(title);
     return a;
   }
-
-  @Override
-  protected void afterNavigation() {
-    super.afterNavigation();
-    //selectTab();
-  }
-
-  //private void selectTab() {
-  //  String target = RouteConfiguration.forSessionScope().getUrl(getContent().getClass());
-  //  Optional<Component> tabToSelect = menu.getChildren().filter(tab -> {
-  //    Component child = tab.getChildren().findFirst().get();
-  //    return child instanceof RouterLink && ((RouterLink) child).getHref().equals(target);
-  //  }).findFirst();
-  //  tabToSelect.ifPresent(tab -> menu.setSelectedTab((Tab) tab));
-  //}
 }

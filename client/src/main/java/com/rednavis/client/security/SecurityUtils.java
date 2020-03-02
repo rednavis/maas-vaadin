@@ -3,13 +3,16 @@ package com.rednavis.client.security;
 import com.rednavis.client.view.error.AccessDeniedView;
 import com.rednavis.client.view.error.CustomRouteNotFoundError;
 import com.rednavis.client.view.login.LoginView;
+import com.rednavis.shared.security.CurrentUser;
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,11 +20,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * SecurityUtils takes care of all such static operations that have to do with security and querying rights from different beans of the UI.
  */
+@Slf4j
 @UtilityClass
 public class SecurityUtils {
 
@@ -30,16 +33,14 @@ public class SecurityUtils {
    *
    * @return the user name of the current user or <code>null</code> if the user has not signed in
    */
-  public static String getUsername() {
+  public static CurrentUser getCurrentUser() {
     SecurityContext context = SecurityContextHolder.getContext();
     Object principal = context.getAuthentication()
         .getPrincipal();
-    if (principal instanceof UserDetails) {
-      UserDetails userDetails = (UserDetails) context.getAuthentication()
+    if (principal instanceof CurrentUser) {
+      return (CurrentUser) context.getAuthentication()
           .getPrincipal();
-      return userDetails.getUsername();
     }
-    // Anonymous or no authentication.
     return null;
   }
 
@@ -72,6 +73,11 @@ public class SecurityUtils {
       return true;
     }
 
+    log.info("GrantedAuthority: {}", userAuthentication.getAuthorities()
+        .stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.joining(", "))
+    );
     List<String> allowedRoles = Arrays.asList(secured.value());
     return userAuthentication.getAuthorities()
         .stream()
@@ -85,7 +91,9 @@ public class SecurityUtils {
    * @return true if the user is logged in. False otherwise.
    */
   public static boolean isUserLoggedIn() {
-    return isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
+    boolean isUserLoggedIn = isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
+    log.info("isUserLoggedIn: {}", isUserLoggedIn);
+    return isUserLoggedIn;
   }
 
   private static boolean isUserLoggedIn(Authentication authentication) {
@@ -99,7 +107,7 @@ public class SecurityUtils {
    * @param request {@link HttpServletRequest}
    * @return true if is an internal framework request. False otherwise.
    */
-  static boolean isFrameworkInternalRequest(HttpServletRequest request) {
+  public static boolean isFrameworkInternalRequest(HttpServletRequest request) {
     final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
     return parameterValue != null && Stream.of(RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
   }

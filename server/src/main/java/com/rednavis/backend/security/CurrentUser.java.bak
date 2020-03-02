@@ -1,7 +1,0 @@
-package com.rednavis.backend.security;
-
-@FunctionalInterface
-public interface CurrentUser {
-
-	User getUser();
-}

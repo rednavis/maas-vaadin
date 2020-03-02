@@ -1,5 +1,8 @@
 package com.rednavis.client;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class ConstantUtils {
 
   public static final String VIEW_PORT = "width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes";

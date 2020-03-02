@@ -7,11 +7,10 @@ import static com.rednavis.client.ConstantUtils.VIEW_PORT;
 import com.rednavis.backend.service.AuthService;
 import com.rednavis.client.security.SecurityUtils;
 import com.rednavis.client.view.dashboard.DashboardView;
-import com.rednavis.shared.rest.ApiResponse;
 import com.rednavis.shared.rest.request.SignInRequest;
-import com.rednavis.shared.rest.response.SignInResponse;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -29,14 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
 @PageTitle(PAGE_LOGIN_TITLE)
 @Route(PAGE_LOGIN_URL)
-@RouteAlias(value = "")
+@RouteAlias("")
 @Tag("login-view")
 //@JsModule("./src/view/login/login-view.js")
 @Viewport(VIEW_PORT)
 @Slf4j
 public class LoginView extends Div implements AfterNavigationObserver, BeforeEnterObserver {
-
-  private final AuthService authService;
 
   private final LoginForm loginForm;
 
@@ -47,24 +44,21 @@ public class LoginView extends Div implements AfterNavigationObserver, BeforeEnt
    */
   @Autowired
   public LoginView(AuthService authService) {
-    this.authService = authService;
-
     loginForm = new LoginForm();
+
     loginForm.addLoginListener(login -> {
       SignInRequest signInRequest = SignInRequest.builder()
           .email(login.getUsername())
           .password(login.getPassword())
           .build();
-      ApiResponse<SignInResponse> signInResponseApiResponse = authService.signIn(signInRequest);
-      log.info("SignInResponse: {}", signInResponseApiResponse);
-      if (signInResponseApiResponse.getSuccess()) {
+      if (authService.signIn(signInRequest)) {
         getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
       } else {
         loginForm.setError(true);
       }
     });
 
-    add(loginForm);
+    add(new H3("admin@admin.com"), new H3("1@QWaszx"), loginForm);
   }
 
   @Override

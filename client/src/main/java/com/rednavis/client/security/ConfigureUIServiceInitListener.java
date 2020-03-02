@@ -8,10 +8,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Adds before enter listener to check access to views. Adds the Offline banner.
  */
+@Slf4j
 @SpringComponent
 @SuppressWarnings("AbbreviationAsWordInName")
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
@@ -32,6 +34,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
    */
   private void beforeEnter(BeforeEnterEvent event) {
     final boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
+    log.info("accessGranted: {}", accessGranted);
     if (!accessGranted) {
       if (SecurityUtils.isUserLoggedIn()) {
         event.rerouteToError(AccessDeniedException.class);

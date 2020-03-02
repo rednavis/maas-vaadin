@@ -3,9 +3,11 @@
 [![codecov](https://codecov.io/gh/rednavis/maas-vaadin/branch/master/graph/badge.svg)](https://codecov.io/gh/rednavis/maas-vaadin)
 
 # maas-vaadin
+
 Client of the Material assets management system
 
 ## Technology stack
+
 - Java 12
 - Spring Boot
 - Gradle
@@ -14,6 +16,7 @@ Client of the Material assets management system
 - Vaadin
 
 ## Build project
+
 `./gradlew clean build`
 
 ### Running With Spring Boot via Gradle In Development Mode
