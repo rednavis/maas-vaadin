@@ -1,6 +1,6 @@
 package com.rednavis.client.config;
 
-import com.rednavis.client.security.SecurityUtils;
+import com.rednavis.client.util.SecurityUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;

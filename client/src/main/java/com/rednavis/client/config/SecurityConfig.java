@@ -2,7 +2,7 @@ package com.rednavis.client.config;
 
 import static com.rednavis.client.ConstantUtils.PAGE_DASHBOARD_URL;
 
-import com.rednavis.client.security.SecurityUtils;
+import com.rednavis.client.util.SecurityUtils;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,21 +38,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Allow all flow internal requests.
         .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-        .mvcMatchers(LOGIN_URL, "").permitAll()
+        .mvcMatchers(LOGIN_URL, "", "/").permitAll()
 
         // Allow all requests by logged in users.
-        .anyRequest().hasAnyAuthority(roles.toArray(String[]::new))
+        .anyRequest().hasAnyAuthority(roles.toArray(String[]::new));
 
-        // Configure the login page.
-        //.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-        //.failureUrl(LOGIN_FAILURE_URL)
+    // Configure the login page.
+    //.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
+    //.failureUrl(LOGIN_FAILURE_URL)
 
-        // Register the success handler that redirects users to the page they last tried
-        // to access
-        //.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+    // Register the success handler that redirects users to the page they last tried
+    // to access
+    //.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
-        // Configure logout
-        .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+    // Configure logout
+    //.and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
   }
 
   /**

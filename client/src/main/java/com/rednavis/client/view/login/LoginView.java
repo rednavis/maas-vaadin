@@ -5,7 +5,7 @@ import static com.rednavis.client.ConstantUtils.PAGE_LOGIN_URL;
 import static com.rednavis.client.ConstantUtils.VIEW_PORT;
 
 import com.rednavis.backend.service.AuthService;
-import com.rednavis.client.security.SecurityUtils;
+import com.rednavis.client.util.SecurityUtils;
 import com.rednavis.client.view.dashboard.DashboardView;
 import com.rednavis.shared.rest.request.SignInRequest;
 import com.vaadin.flow.component.Tag;

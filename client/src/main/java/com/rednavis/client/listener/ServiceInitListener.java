@@ -1,27 +1,25 @@
-package com.rednavis.client.security;
+package com.rednavis.client.listener;
 
 import com.rednavis.client.component.OfflineBanner;
 import com.rednavis.client.exceptions.AccessDeniedException;
+import com.rednavis.client.util.SecurityUtils;
 import com.rednavis.client.view.login.LoginView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Adds before enter listener to check access to views. Adds the Offline banner.
  */
-@Slf4j
 @SpringComponent
-@SuppressWarnings("AbbreviationAsWordInName")
-public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
+public class ServiceInitListener implements VaadinServiceInitListener {
 
   @Override
   public void serviceInit(ServiceInitEvent event) {
     event.getSource().addUIInitListener(uiEvent -> {
-      final UI ui = uiEvent.getUI();
+      UI ui = uiEvent.getUI();
       ui.add(new OfflineBanner());
       ui.addBeforeEnterListener(this::beforeEnter);
     });
@@ -33,8 +31,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
    * @param event before navigation event with event details
    */
   private void beforeEnter(BeforeEnterEvent event) {
-    final boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
-    log.info("accessGranted: {}", accessGranted);
+    boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
     if (!accessGranted) {
       if (SecurityUtils.isUserLoggedIn()) {
         event.rerouteToError(AccessDeniedException.class);

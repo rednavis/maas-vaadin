@@ -2,6 +2,7 @@ package com.rednavis.client.view.dashboard;
 
 import static com.rednavis.client.ConstantUtils.PAGE_DASHBOARD_TITLE;
 import static com.rednavis.client.ConstantUtils.PAGE_DASHBOARD_URL;
+import static com.rednavis.shared.util.RoleUtils.ROLE_ADMIN;
 
 import com.rednavis.backend.service.AuthService;
 import com.rednavis.client.view.MainView;
@@ -20,7 +21,7 @@ import org.springframework.security.access.annotation.Secured;
 
 @PageTitle(PAGE_DASHBOARD_TITLE)
 @Route(value = PAGE_DASHBOARD_URL, layout = MainView.class)
-@Secured("ROLE_ADMIN")
+@Secured(ROLE_ADMIN)
 public class DashboardView extends Div {
 
   private final transient AuthService authService;

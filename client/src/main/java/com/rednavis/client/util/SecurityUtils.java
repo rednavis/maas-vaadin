@@ -1,4 +1,4 @@
-package com.rednavis.client.security;
+package com.rednavis.client.util;
 
 import com.rednavis.client.view.error.AccessDeniedView;
 import com.rednavis.client.view.error.CustomRouteNotFoundError;
