@@ -14,6 +14,12 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestConfig {
 
+  /**
+   * restTemplate.
+   *
+   * @param builder builder
+   * @return
+   */
   @Bean
   public RestTemplate restTemplate(RestTemplateBuilder builder) {
     RequestFactorySupplier requestFactorySupplier = new RequestFactorySupplier();

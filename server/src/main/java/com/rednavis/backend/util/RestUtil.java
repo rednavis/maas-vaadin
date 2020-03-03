@@ -4,7 +4,7 @@ import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL;
 import static com.rednavis.shared.util.StringUtils.BEARER_SPACE;
 
 import com.rednavis.shared.rest.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -15,12 +15,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@RequiredArgsConstructor
+@SuppressWarnings("MethodTypeParameterName")
 public class RestUtil {
 
   public static String AUTH;
 
-  @Autowired
-  private RestTemplate restTemplate;
+  private final RestTemplate restTemplate;
+
   @Value("${maas.api.server}")
   private String maasApiServer;
 
@@ -28,6 +30,15 @@ public class RestUtil {
     return maasApiServer + AUTH_URL + restPoint;
   }
 
+  /**
+   * get.
+   *
+   * @param url        url
+   * @param response   response
+   * @param token      token
+   * @param <RESPONSE> RESPONSE
+   * @return
+   */
   public <RESPONSE> ApiResponse<RESPONSE> get(String url, ParameterizedTypeReference<ApiResponse<RESPONSE>> response, boolean token) {
     ResponseEntity<ApiResponse<RESPONSE>> responseEntity;
     if (token) {
@@ -52,6 +63,17 @@ public class RestUtil {
     return restTemplate.exchange(url, HttpMethod.GET, requestEntity, response);
   }
 
+  /**
+   * post.
+   *
+   * @param url        url
+   * @param request    request
+   * @param response   response
+   * @param token      token
+   * @param <REQUEST>  REQUEST
+   * @param <RESPONSE> RESPONSE
+   * @return
+   */
   public <REQUEST, RESPONSE> ApiResponse<RESPONSE> post(String url, REQUEST request,
       ParameterizedTypeReference<ApiResponse<RESPONSE>> response, boolean token) {
     ResponseEntity<ApiResponse<RESPONSE>> responseEntity;

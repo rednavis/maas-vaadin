@@ -40,19 +40,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
         .mvcMatchers(LOGIN_URL, "", "/").permitAll()
 
+        // Configure the login page.
+        //.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
+        //.failureUrl(LOGIN_FAILURE_URL)
+
+        // Register the success handler that redirects users to the page they last tried to access
+        //.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+
+        // Configure logout
+        //.and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL)
         // Allow all requests by logged in users.
         .anyRequest().hasAnyAuthority(roles.toArray(String[]::new));
-
-    // Configure the login page.
-    //.and().formLogin().loginPage(LOGIN_URL).permitAll().loginProcessingUrl(LOGIN_PROCESSING_URL)
-    //.failureUrl(LOGIN_FAILURE_URL)
-
-    // Register the success handler that redirects users to the page they last tried
-    // to access
-    //.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
-
-    // Configure logout
-    //.and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
   }
 
   /**
