@@ -28,11 +28,16 @@ export const styles = html`
         .dialog *{
           width: 100%;
         }
+        
         .dialog vaadin-button{
           border-radius: 0px;
           color: #fff;
         }
         
+        :host(.text-left) .vaadin-button-container {
+          justify-content: left;
+        }
+
         .social-icon {
           font-size: 18px;
         }

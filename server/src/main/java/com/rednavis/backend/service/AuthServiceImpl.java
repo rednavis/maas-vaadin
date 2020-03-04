@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public boolean signIn(SignInRequest signInRequest) {
+  public ApiResponse<SignInResponse> signIn(SignInRequest signInRequest) {
     String url = restUtil.createAuthUrl(AUTH_URL_SIGNIN);
     ApiResponse<SignInResponse> signInResponseApiResponse = restUtil.post(url, signInRequest, new ParameterizedTypeReference<>() {
     }, false);
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
       logout();
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-    return signInResponseApiResponse.getSuccess();
+    return signInResponseApiResponse;
   }
 
   @Override
