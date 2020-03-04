@@ -5,7 +5,8 @@ const documentContainer = document.createElement('template');
 documentContainer.innerHTML = `<custom-style>
       <style>
         html {
-          color: red;
+          --lumo-font-family: 'Panton';
+          --lumo-font-weight: normal;
         }
       </style>
     </custom-style>`;

@@ -7,8 +7,7 @@ class AccessDeniedView extends PolymerElement {
     return html`
     <h3 style="text-align: center">
       Access denied
-    </h3>
-`;
+    </h3>`;
   }
 
   static get is() {

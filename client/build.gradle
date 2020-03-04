@@ -29,21 +29,19 @@ jib {
     }
 }
 
-task production{
+task production {
     dependsOn clean
     dependsOn vaadinBuildFrontend
     dependsOn build
 }
 
-task devRun{
+task devRun {
     dependsOn clean
     dependsOn vaadinPrepareFrontend
     dependsOn bootRun
 }
 
-task devNodeRun{
+task devNode {
     dependsOn clean
     dependsOn vaadinPrepareNode
-    dependsOn vaadinPrepareFrontend
-    dependsOn bootRun
 }

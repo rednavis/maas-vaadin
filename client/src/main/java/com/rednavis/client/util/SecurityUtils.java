@@ -8,11 +8,9 @@ import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.shared.ApplicationConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -24,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * SecurityUtils takes care of all such static operations that have to do with security and querying rights from different beans of the UI.
  */
-@Slf4j
 @UtilityClass
 public class SecurityUtils {
 
@@ -73,11 +70,6 @@ public class SecurityUtils {
       return true;
     }
 
-    log.info("GrantedAuthority: {}", userAuthentication.getAuthorities()
-        .stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.joining(", "))
-    );
     List<String> allowedRoles = Arrays.asList(secured.value());
     return userAuthentication.getAuthorities()
         .stream()
@@ -91,9 +83,7 @@ public class SecurityUtils {
    * @return true if the user is logged in. False otherwise.
    */
   public static boolean isUserLoggedIn() {
-    boolean isUserLoggedIn = isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
-    log.info("isUserLoggedIn: {}", isUserLoggedIn);
-    return isUserLoggedIn;
+    return isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
   }
 
   private static boolean isUserLoggedIn(Authentication authentication) {

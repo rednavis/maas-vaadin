@@ -1,5 +1,7 @@
 package com.rednavis.client.view;
 
+import static com.rednavis.client.ConstantUtils.PAGE_LOGIN_URL;
+
 import com.rednavis.client.view.dashboard.DashboardView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -19,7 +21,13 @@ import java.util.List;
  * The main view contains a button and a click listener.
  */
 @JsModule("./styles/shared-styles.js")
-@PWA(name = "MAAS Vaadin", shortName = "MAAS Vaadin")
+@PWA(name = "MAAS Vaadin",
+    shortName = "MAAS Vaadin",
+    startPath = PAGE_LOGIN_URL,
+    backgroundColor = "#227aef",
+    themeColor = "#227aef",
+    offlinePath = "offline-page.html",
+    offlineResources = {"images/offline-login-banner.jpg"})
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
 public class MainView extends AppLayout {
 
