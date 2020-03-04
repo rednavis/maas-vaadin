@@ -79,7 +79,7 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
       ApiResponse<SignInResponse> signInResponseApiResponse = authService.signIn(signInRequest);
       if (signInResponseApiResponse.getSuccess()) {
         SignInResponse signInResponse = signInResponseApiResponse.getPayloads();
-        Cookie assessCookie = new Cookie("assessToken", signInResponse.getAccessToken());
+        Cookie assessCookie = new Cookie("accessToken", signInResponse.getAccessToken());
         assessCookie.setMaxAge(signInResponse.getAccessTokenExpiration()); // define after how many *seconds* the cookie should expire
         assessCookie.setPath("/"); // single slash means the cookie is set for your whole application.
         VaadinService.getCurrentResponse().addCookie(assessCookie);

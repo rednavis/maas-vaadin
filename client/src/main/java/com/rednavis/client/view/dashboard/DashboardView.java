@@ -50,7 +50,7 @@ public class DashboardView extends Div {
       authService.logout();
       Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
       Arrays.stream(cookies)
-          .filter(cookie -> (cookie.getName().equals("assessToken") || cookie.getName().equals("refreshToken")))
+          .filter(cookie -> (cookie.getName().equals("accessToken") || cookie.getName().equals("refreshToken")))
           .forEach(cookie -> {
             cookie.setValue(null);
             // By setting the cookie maxAge to 0 it will deleted immediately

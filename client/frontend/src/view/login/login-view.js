@@ -16,10 +16,12 @@ class LoginView extends PolymerElement {
         <h2 class="dialog-header">Sign in</h2>
         <vaadin-vertical-layout>
           <vaadin-button id="btnSignByFacebook" class="btn-primary text-left">
-            <fontawesome-icon class="social-icon" prefix="fab" name="facebook" fixed-width slot="prefix"></fontawesome-icon>Sign in with <b>Facebook</b>
+            <fontawesome-icon class="social-icon" prefix="fab" name="facebook" fixed-width slot="prefix"></fontawesome-icon>
+            Sign in with <b>Facebook</b>
           </vaadin-button>
           <vaadin-button id="btnSignByGoogle" class="btn-danger text-left">
-            <fontawesome-icon class="social-icon" prefix="fab" name="google" fixed-width slot="prefix"></fontawesome-icon>Sign in with <b>Google</b>
+            <fontawesome-icon class="social-icon" prefix="fab" name="google" fixed-width slot="prefix"></fontawesome-icon>
+            Sign in with <b>Google</b>
           </vaadin-button>      
           <div class="or-seperator">
             <i>or</i>         
