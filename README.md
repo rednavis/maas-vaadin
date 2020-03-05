@@ -30,14 +30,14 @@ Run the following command in this repo:
 or
 
 ```bash
-./gradlew devRun
+./gradlew dev
 ```
 
 Now you can open the [http://localhost:8080](http://localhost:8080) with your browser.
 
 > If you do not have node.js installed locally, please run `./gradlew vaadinPrepareNode` once.
 > The task will download a local node.js distribution to your project folder, into the `node/` folder.
-> Or `./gradlew devNode`
+> Or `./gradlew node`
 
 ### Running With Spring Boot from your IDE In Development Mode
 

@@ -1,8 +1,0 @@
-dependencies {
-    compile 'com.rednavis:maas-shared'
-
-    implementation 'com.nimbusds:nimbus-jose-jwt'
-
-    compile 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-}

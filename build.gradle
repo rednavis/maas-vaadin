@@ -1,18 +1,24 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '2.2.5.RELEASE' apply false
-    id 'com.google.cloud.tools.jib' version '2.1.0' apply false
-    id 'com.vaadin' version '0.6.0' apply false
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'com.google.cloud.tools.jib' version '2.1.0'
+    id 'com.vaadin' version '0.6.0'
     id 'com.github.ben-manes.versions' version '0.28.0'
 }
+
+apply plugin: 'project-report'
+apply plugin: 'jacoco'
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${rootDir}/gradle/java.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
 
 ext {
     maasVaadinVersion = '0.0.1-SNAPSHOT'
     lombokVersion = '1.18.12'
     mapstructVersion = '1.3.1.Final'
     springBootVersion = '2.2.5.RELEASE'
-    nimbusJoseJwtVersion = '8.8'
     vaadinVersion = '14.1.18'
     jupiterVersion = '5.6.0'
 }
@@ -21,74 +27,58 @@ configurations.all {
     exclude group: 'junit', module: 'junit'
 }
 
-allprojects {
-    apply plugin: 'project-report'
-    // needed because of multi-module configuration
-    apply plugin: 'jacoco'
-    apply plugin: 'io.spring.dependency-management'
-
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencyManagement {
-        dependencies {
-            //Server
-            dependency "org.projectlombok:lombok:${lombokVersion}"
-            dependency "org.mapstruct:mapstruct:${mapstructVersion}"
-            dependency "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-            dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-            dependency "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
-
-            dependency "com.nimbusds:nimbus-jose-jwt:${nimbusJoseJwtVersion}"
-
-            imports {
-                mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-            }
-
-            //Test
-            dependency "org.junit.jupiter:junit-jupiter:${jupiterVersion}"
-            dependency "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
-        }
-    }
+repositories {
+    jcenter()
+    mavenCentral()
 }
 
-// assumed that all subprojects are java-based modules
-subprojects {
-    apply from: "${rootDir}/gradle/java.gradle"
-    apply from: "${rootDir}/gradle/checkstyle.gradle"
-
+dependencyManagement {
     dependencies {
-        implementation 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        implementation 'org.mapstruct:mapstruct'
-        annotationProcessor 'org.mapstruct:mapstruct-processor'
+        //Server
+        dependency "org.projectlombok:lombok:${lombokVersion}"
+        dependency "org.mapstruct:mapstruct:${mapstructVersion}"
+        dependency "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
-        testImplementation('org.junit.jupiter:junit-jupiter') {
-            exclude group: 'junit', module: 'junit'
-        }
-        testImplementation('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'junit', module: 'junit'
-        }
-    }
+        dependency "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+        dependency "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
 
-    jacocoTestReport {
-        reports {
-            xml.enabled true
-            html.enabled false
+        imports {
+            mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
         }
+
+        //Test
+        dependency "org.junit.jupiter:junit-jupiter:${jupiterVersion}"
+        dependency "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     }
 }
 
-task codeCoverageReport(type: JacocoReport) {
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+dependencies {
+    implementation 'com.rednavis:maas-shared'
 
-    subprojects.each {
-        sourceSets it.sourceSets.main
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct'
+    annotationProcessor 'org.mapstruct:mapstruct-processor'
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation('com.vaadin:vaadin-spring-boot-starter') {
+//        Webjars are only needed when running in Vaadin 13 compatibility mode
+        ["com.vaadin.webjar",
+         "org.webjars.bowergithub.insites",
+         "org.webjars.bowergithub.polymer",
+         "org.webjars.bowergithub.polymerelements",
+         "org.webjars.bowergithub.vaadin",
+         "org.webjars.bowergithub.webcomponents"]
+                .forEach { group -> exclude(group: group) }
     }
 
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+jacocoTestReport {
     reports {
         xml.enabled true
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
@@ -97,13 +87,34 @@ task codeCoverageReport(type: JacocoReport) {
     }
 }
 
-// https://github.com/codecov/example-gradle#-do-you-support-multi-module-projects
-codeCoverageReport.dependsOn {
-    subprojects*.test
+wrapper {
+    gradleVersion = "6.2.2"
 }
 
-//defaultTasks("clean", "vaadinBuildFrontend", "build")
+jib {
+    from {
+        image = "adoptopenjdk:12-jre-hotspot"
+    }
+    to {
+        image = "maas-vaadin:${maasVaadinVersion}"
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+}
 
-wrapper {
-    gradleVersion = "6.2.1"
+clean {
+    dependsOn gradle.includedBuild('maas-shared').task(':clean')
+}
+
+task production {
+    dependsOn clean, vaadinBuildFrontend, build
+}
+
+task dev {
+    dependsOn clean, vaadinPrepareFrontend, bootRun
+}
+
+task node {
+    dependsOn clean, vaadinPrepareNode
 }
