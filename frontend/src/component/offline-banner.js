@@ -10,12 +10,9 @@ class OfflineBanner extends PolymerElement {
         display: none !important;
       }
     </style>
-
     <iron-ajax auto="" url="./offline-page.html" handle-as="document" last-response="{{offlinePage}}"></iron-ajax>
-
     <div id="offline" class="offline" hidden\$="[[online]]">
-    </div>
-`;
+    </div>`;
   }
 
   static get is() {

@@ -1,4 +1,4 @@
-package com.rednavis.vaadin.component;
+package com.rednavis.vaadin.view.component;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;

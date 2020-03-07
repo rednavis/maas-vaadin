@@ -16,8 +16,8 @@ import com.vaadin.flow.router.RouteNotFoundError;
 import com.vaadin.flow.router.RouterLink;
 import javax.servlet.http.HttpServletResponse;
 
-@ParentLayout(MainView.class)
 @PageTitle(NOT_FOUND_TITLE)
+@ParentLayout(MainView.class)
 @JsModule("./styles/shared-styles.js")
 public class CustomRouteNotFoundError extends RouteNotFoundError {
 

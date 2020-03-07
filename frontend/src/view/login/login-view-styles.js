@@ -19,17 +19,14 @@ export const styles = html`
           box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
           padding: 30px;
           margin-bottom: 15px;
+          align-items: normal;
         }
         
         .dialog .dialog-header {
           text-align: center;
           margin: 0 0 15px;
         }
-        
-        .dialog *{
-          width: 100%;
-        }
-        
+
         .dialog vaadin-button{
           color: #fff;
         }
@@ -65,6 +62,14 @@ export const styles = html`
           z-index: 1;
         }
       
+        .addon{
+          align-items: center;
+        }
+        
+        .addon a:last-child {
+          margin-left: auto;
+        }
+        
         .hint-text {
           color: #777;
           padding-bottom: 15px;

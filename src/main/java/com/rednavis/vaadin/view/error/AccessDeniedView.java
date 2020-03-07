@@ -16,11 +16,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import javax.servlet.http.HttpServletResponse;
 
-@Tag("access-denied-view")
-@JsModule("./src/view/error/access-denied-view.js")
-@ParentLayout(MainView.class)
 @PageTitle(ACCESS_DENIED_TITLE)
+@Tag("access-denied-view")
 @Route
+@ParentLayout(MainView.class)
+@JsModule("./src/view/error/access-denied-view.js")
 public class AccessDeniedView extends PolymerTemplate<TemplateModel> implements HasErrorParameter<AccessDeniedException> {
 
   @Override

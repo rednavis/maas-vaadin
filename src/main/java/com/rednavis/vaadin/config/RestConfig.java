@@ -2,6 +2,7 @@ package com.rednavis.vaadin.config;
 
 import com.rednavis.vaadin.config.interceptor.HeaderHttpRequestInterceptor;
 import com.rednavis.vaadin.config.interceptor.LogHttpRequestInterceptor;
+import java.util.List;
 import java.util.function.Supplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -22,16 +23,11 @@ public class RestConfig {
    */
   @Bean
   public RestTemplate restTemplate(RestTemplateBuilder builder) {
-    RequestFactorySupplier requestFactorySupplier = new RequestFactorySupplier();
-    CustomErrorHandler customErrorHandler = new CustomErrorHandler();
-    HeaderHttpRequestInterceptor headerHttpRequestInterceptor = new HeaderHttpRequestInterceptor();
-    LogHttpRequestInterceptor logHttpRequestInterceptor = new LogHttpRequestInterceptor();
-
     return builder
-        .requestFactory(requestFactorySupplier)
-        .errorHandler(customErrorHandler)
-        .additionalInterceptors(headerHttpRequestInterceptor,
-            logHttpRequestInterceptor)
+        .requestFactory(new RequestFactorySupplier())
+        .errorHandler(new CustomErrorHandler())
+        .additionalInterceptors(List.of(new HeaderHttpRequestInterceptor(),
+            new LogHttpRequestInterceptor()))
         .build();
   }
 

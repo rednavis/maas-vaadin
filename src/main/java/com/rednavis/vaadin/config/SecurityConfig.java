@@ -21,8 +21,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    CustomRequestCache customRequestCache = new CustomRequestCache();
-
     http
         .csrf().disable()
         .csrf().disable()
@@ -30,7 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic().disable()
         // Register our CustomRequestCache, that saves unauthorized access attempts, so
         // the user is redirected after login.
-        .requestCache().requestCache(customRequestCache)
+        .requestCache().requestCache(new CustomRequestCache())
         .and()
         .authorizeRequests()
         // Allow all flow internal requests.
@@ -64,6 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // (development mode) webjars
         "/webjars/**",
         // (production mode) static resources
-        "/frontend-es5/**", "/frontend-es6/**");
+        "/frontend-es5/**",
+        "/frontend-es6/**");
   }
 }

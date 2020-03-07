@@ -5,7 +5,6 @@
     "fontawesome-icon": "1.0.4",
     "@polymer/polymer": "3.2.0",
     "@polymer/iron-ajax": "3.0.1",
-    "@polymer/iron-form": "3.0.1",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@vaadin/flow-deps": "./target/frontend"
   },
@@ -19,7 +18,7 @@
     "webpack-merge": "4.2.2",
     "raw-loader": "3.0.0"
   },
-  "vaadinAppPackageHash": "db40edfa533a59f56700092fa445d856ff8d13c4945c408d8ee90d92f8417f11",
+  "vaadinAppPackageHash": "2e694d83d5e6d415a18b0e0c39e25e259a3c12992384aea8d277d084bdd87020",
   "vaadin": {
     "disableUsageStatistics": true
   }

@@ -15,9 +15,10 @@ public class LogHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
   @Override
   public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+    long startTime = System.currentTimeMillis();
     logRequestDetails(request, body);
     ClientHttpResponse clientHttpResponse = execution.execute(request, body);
-    logResponseDetails(clientHttpResponse);
+    logResponseDetails(clientHttpResponse, startTime);
     return clientHttpResponse;
   }
 
@@ -30,12 +31,15 @@ public class LogHttpRequestInterceptor implements ClientHttpRequestInterceptor {
     log.info("==================================================");
   }
 
-  private void logResponseDetails(ClientHttpResponse response) throws IOException {
+  private void logResponseDetails(ClientHttpResponse response, long startTime) throws IOException {
+    long endTime = System.currentTimeMillis();
+
     log.info("=========================RESPONSE=========================");
     log.info("Status code  : {}", response.getStatusCode());
     log.info("Status text  : {}", response.getStatusText());
     log.info("Headers      : {}", response.getHeaders());
     log.info("Response body: {}", StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
+    log.info("Request took : {} ms", endTime - startTime);
     log.info("==================================================");
   }
 }
