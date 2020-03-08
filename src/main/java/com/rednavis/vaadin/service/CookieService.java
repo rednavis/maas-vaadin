@@ -50,6 +50,12 @@ public class CookieService {
         .forEach(cookie -> addCookie(cookieEnum, null, 0));
   }
 
+  /**
+   * getCookie.
+   *
+   * @param cookieEnum cookieEnum
+   * @return
+   */
   public Cookie getCookie(CookieEnum cookieEnum) {
     Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
     // By setting the cookie maxAge to 0 it will deleted immediately

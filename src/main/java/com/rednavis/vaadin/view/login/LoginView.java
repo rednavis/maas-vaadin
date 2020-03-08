@@ -4,10 +4,7 @@ import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_TITLE;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_URL;
 import static com.rednavis.vaadin.util.ConstantUtils.VIEW_PORT;
 
-import com.rednavis.shared.rest.request.SignInRequest;
-import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.vaadin.dto.SignInClient;
-import com.rednavis.vaadin.service.ActualUserService;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.dashboard.DashboardView;
@@ -42,7 +39,6 @@ import com.vaadin.flow.theme.lumo.Lumo;
 public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeEnterObserver {
 
   private final transient AuthService authService;
-  private final transient ActualUserService actualUserService;
 
   @Id("btnSignByFacebook")
   private Button btnSignByFacebook;
@@ -61,11 +57,9 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
   /**
    * LoginView.
    *
-   * @param actualUserService actualUserService
-   * @param authService       authService
+   * @param authService authService
    */
-  public LoginView(ActualUserService actualUserService, AuthService authService) {
-    this.actualUserService = actualUserService;
+  public LoginView(AuthService authService) {
     this.authService = authService;
 
     signInClientBinder = new Binder<>(SignInClient.class);
@@ -100,12 +94,7 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
       signInClientBinder.validate();
       if (signInClientBinder.isValid()) {
         SignInClient signInClient = signInClientBinder.getBean();
-        SignInRequest signInRequest = SignInRequest.builder()
-            .userName(signInClient.getUserName())
-            .password(signInClient.getPassword())
-            .build();
-        SignInResponse signInResponse = authService.signIn(signInRequest);
-        if (actualUserService.authenticateActualUser(signInResponse, signInClient.isSaveUser())) {
+        if (authService.signIn(signInClient)) {
           getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
         } else {
           Notification.show("Error");

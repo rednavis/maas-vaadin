@@ -31,6 +31,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @UtilityClass
 public class SecurityUtils {
 
+  /**
+   * createAuthentication.
+   *
+   * @param currentUser currentUser
+   */
   public void createAuthentication(CurrentUser currentUser) {
     log.info("createAuthentication [currentUser: {}]", currentUser);
     Collection<? extends GrantedAuthority> authorities = currentUser.getRoles()

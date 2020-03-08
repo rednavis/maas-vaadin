@@ -8,7 +8,7 @@ import static java.time.Instant.now;
 
 import com.rednavis.vaadin.annotation.AccessToken;
 import com.rednavis.vaadin.annotation.ActualUser;
-import com.rednavis.vaadin.service.ActualUserService;
+import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.view.MainView;
 import com.rednavis.vaadin.view.login.LoginView;
 import com.vaadin.flow.component.button.Button;
@@ -26,18 +26,18 @@ import org.springframework.security.access.annotation.Secured;
 @Route(value = PAGE_DASHBOARD_URL, layout = MainView.class)
 public class DashboardView extends Div {
 
-  private final transient ActualUserService actualUserService;
+  private final transient AuthService authService;
 
   /**
    * DashboardView.
    *
-   * @param actualUser        actualUser
-   * @param accessToken       accessToken
-   * @param actualUserService actualUserService
+   * @param actualUser  actualUser
+   * @param accessToken accessToken
+   * @param authService authService
    */
   @Autowired
-  public DashboardView(ActualUser actualUser, AccessToken accessToken, ActualUserService actualUserService) {
-    this.actualUserService = actualUserService;
+  public DashboardView(ActualUser actualUser, AccessToken accessToken, AuthService authService) {
+    this.authService = authService;
 
     add(new H2(actualUser.getCurrentUser().toString()),
         new H2(accessToken.getAccessToken()),
@@ -48,7 +48,7 @@ public class DashboardView extends Div {
   private Button createLogoutLink() {
     Button logout = new Button("LOGOUT", VaadinIcon.ARROW_RIGHT.create());
     logout.addClickListener(event -> {
-      actualUserService.disproveActualUser();
+      authService.signOut();
       getUI().ifPresent(ui -> ui.navigate(LoginView.class));
     });
     return logout;

@@ -38,6 +38,15 @@ public class RestService {
         .getBody();
   }
 
+  /**
+   * getWithToken.
+   *
+   * @param url           url
+   * @param token         token
+   * @param responseClass responseClass
+   * @param <R>           R
+   * @return
+   */
   public <R> ApiResponse<R> getWithToken(String url, String token, Class<R> responseClass) {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
@@ -46,6 +55,16 @@ public class RestService {
         .getBody();
   }
 
+  /**
+   * post.
+   *
+   * @param url           url
+   * @param request       request
+   * @param responseClass responseClass
+   * @param <T>           T
+   * @param <R>           R
+   * @return
+   */
   public <T, R> ApiResponse<R> post(String url, T request, Class<R> responseClass) {
     HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
     ParameterizedTypeReference<ApiResponse<R>> typeRef = typeReference(responseClass);
@@ -53,6 +72,17 @@ public class RestService {
         .getBody();
   }
 
+  /**
+   * postWithToken.
+   *
+   * @param url           url
+   * @param request       request
+   * @param token         token
+   * @param responseClass responseClass
+   * @param <T>           T
+   * @param <R>           R
+   * @return
+   */
   public <T, R> ApiResponse<R> postWithToken(String url, T request, String token, Class<R> responseClass) {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
@@ -61,6 +91,12 @@ public class RestService {
         .getBody();
   }
 
+  /**
+   * getCurrenUser.
+   *
+   * @param accessToken accessToken
+   * @return
+   */
   public CurrentUser getCurrenUser(String accessToken) {
     String url = createAuthUrl(AUTH_URL_CURRENTUSER);
     ApiResponse<CurrentUser> currentUserApiResponse = getWithToken(url, accessToken, CurrentUser.class);
