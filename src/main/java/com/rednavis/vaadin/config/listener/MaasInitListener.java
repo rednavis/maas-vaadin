@@ -6,10 +6,13 @@ import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.component.OfflineBanner;
 import com.rednavis.vaadin.view.login.LoginView;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import com.vaadin.flow.server.VaadinSession;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +35,17 @@ public class MaasInitListener implements VaadinServiceInitListener {
     vaadinService.addSessionInitListener(
         sessionInitEvent -> {
           log.info("New Vaadin session created. Current count is: {}", sessionsCount.incrementAndGet());
-          authService.signInFromCookie(sessionInitEvent.getSession());
+          VaadinSession vaadinSession = sessionInitEvent.getSession();
+          authService.signInFromCookie(vaadinSession);
+          vaadinSession
+              .setErrorHandler((ErrorHandler) errorEvent -> Notification.show("VaadinSession - " + errorEvent.getThrowable().getMessage()));
           log.info("restoreSession - FINISH");
         });
     vaadinService.addSessionDestroyListener(
         sessionDestroyEvent -> log.info("Vaadin session destroyed. Current count is {} ", sessionsCount.decrementAndGet()));
 
-    event.getSource().addUIInitListener(uiEvent -> {
-      UI ui = uiEvent.getUI();
+    event.getSource().addUIInitListener(uiInitEvent -> {
+      UI ui = uiInitEvent.getUI();
       ui.add(new OfflineBanner());
       ui.addBeforeEnterListener(this::beforeEnter);
     });

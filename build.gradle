@@ -22,6 +22,7 @@ ext {
     springBootVersion = '2.2.5.RELEASE'
     vaadinVersion = '14.1.18'
     appLayoutAddonVersion = '4.0.0.rc5'
+    gsonVersion = '2.8.6'
     jupiterVersion = '5.6.0'
 }
 
@@ -52,6 +53,8 @@ dependencyManagement {
         }
         dependency "com.github.appreciated:app-layout-addon:${appLayoutAddonVersion}"
 
+        dependency "com.google.code.gson:gson:${gsonVersion}"
+
 //        Test
         dependency "org.junit.jupiter:junit-jupiter:${jupiterVersion}"
         dependency "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
@@ -80,6 +83,8 @@ dependencies {
                 .forEach { group -> exclude(group: group) }
     }
     implementation 'com.github.appreciated:app-layout-addon'
+
+    implementation 'com.google.code.gson:gson'
 
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation('org.springframework.boot:spring-boot-starter-test')

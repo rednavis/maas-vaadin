@@ -96,8 +96,6 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
         SignInClient signInClient = signInClientBinder.getBean();
         if (authService.signIn(signInClient)) {
           getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
-        } else {
-          Notification.show("Error");
         }
       }
     });
