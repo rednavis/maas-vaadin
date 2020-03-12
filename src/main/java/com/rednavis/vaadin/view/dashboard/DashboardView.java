@@ -11,15 +11,13 @@ import com.rednavis.vaadin.annotation.ActualUser;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.service.UserService;
 import com.rednavis.vaadin.view.MainView;
-import com.rednavis.vaadin.view.login.LoginView;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +47,7 @@ public class DashboardView extends Div {
     this.accessToken = accessToken;
 
     VerticalLayout verticalLayout = new VerticalLayout(new H2(actualUser.getCurrentUser().toString()),
-        new H2(accessToken.getAccessToken()),
+        new TextArea("accessToken", accessToken.getAccessToken(), "empty token"),
         new H2(DateTimeFormatter.ISO_INSTANT.format(now())),
         createUserButton(),
         createAdminButton(),
@@ -58,20 +56,17 @@ public class DashboardView extends Div {
   }
 
   private Button createUserButton() {
-    return new Button("User",
-        (ComponentEventListener<ClickEvent<Button>>) event -> Notification.show(userService.user(accessToken.getAccessToken())));
+    return new Button("User", event -> Notification.show("111 = " + userService.user(accessToken.getAccessToken())));
   }
 
   private Button createAdminButton() {
-    return new Button("Admin",
-        (ComponentEventListener<ClickEvent<Button>>) event -> Notification.show(userService.admin(accessToken.getAccessToken())));
+    return new Button("Admin", event -> Notification.show("222 = " + userService.admin(accessToken.getAccessToken())));
   }
 
   private Button createLogoutButton() {
     Button logout = new Button("LOGOUT", VaadinIcon.ARROW_RIGHT.create());
     logout.addClickListener(event -> {
       authService.signOut();
-      getUI().ifPresent(ui -> ui.navigate(LoginView.class));
     });
     return logout;
   }

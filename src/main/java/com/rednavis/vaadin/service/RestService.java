@@ -11,7 +11,7 @@ import com.rednavis.shared.rest.request.RefreshTokenRequest;
 import com.rednavis.shared.rest.response.ErrorResponse;
 import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.shared.security.CurrentUser;
-import com.rednavis.vaadin.util.SecurityUtils;
+import com.rednavis.vaadin.exceptions.MaasVaadinException;
 import com.rednavis.vaadin.util.SessionUtils;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.server.VaadinSession;
@@ -28,17 +28,23 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RestService {
+class RestService {
 
   private final RestTemplate restTemplate;
+  private final AuthenticateService authenticateService;
   private final Gson gson;
 
   @Value("${maas.api.server}")
   private String maasApiServer;
 
   public <R> R get(String url, Class<R> responseClass) {
-    return restTemplate.exchange(url, HttpMethod.GET, null, responseClass)
-        .getBody();
+    try {
+      return restTemplate.exchange(url, HttpMethod.GET, null, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("get - something wrong with communication with MaasAPI");
+    }
   }
 
   /**
@@ -58,13 +64,8 @@ public class RestService {
       return restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseClass)
           .getBody();
     } catch (RestClientResponseException e) {
-      log.error("RestClientResponseException {} ", e.getMessage());
-      ErrorResponse errorResponse = gson.fromJson(e.getResponseBodyAsString(), ErrorResponse.class);
-      Notification.show(errorResponse.getMessage());
-      if (errorResponse.getExceptionId().equals("JwtExpiredException")) {
-        refreshToken();
-      }
-      return null;
+      parseException(e);
+      throw new MaasVaadinException("getWithToken - something wrong with communication with MaasAPI");
     }
   }
 
@@ -80,8 +81,13 @@ public class RestService {
    */
   public <T, R> R post(String url, T request, Class<R> responseClass) {
     HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
-    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
-        .getBody();
+    try {
+      return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("post - something wrong with communication with MaasAPI");
+    }
   }
 
   /**
@@ -99,8 +105,13 @@ public class RestService {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
     HttpEntity<T> requestEntity = new HttpEntity<>(request, httpHeaders);
-    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
-        .getBody();
+    try {
+      return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("postWithToken - something wrong with communication with MaasAPI");
+    }
   }
 
   public String createAuthUrl(String restPoint) {
@@ -109,6 +120,13 @@ public class RestService {
 
   public String createUserUrl(String restPoint) {
     return maasApiServer + USER_URL + restPoint;
+  }
+
+  public CurrentUser getCurrenUser(String accessToken) {
+    String url = createAuthUrl(AUTH_URL_CURRENTUSER);
+    CurrentUser currentUser = getWithToken(url, accessToken, CurrentUser.class);
+    log.info("currentUser [currentUser: {}]", currentUser);
+    return currentUser;
   }
 
   private HttpHeaders createAuthorizationHeaders(String accessToken) {
@@ -122,7 +140,20 @@ public class RestService {
     return requestHeaders;
   }
 
-  public void refreshToken() {
+  private void parseException(RestClientResponseException ex) {
+    log.error("RestClientResponseException {} ", ex.getMessage());
+    ErrorResponse errorResponse = gson.fromJson(ex.getResponseBodyAsString(), ErrorResponse.class);
+    Notification.show(errorResponse.getMessage());
+
+    if (errorResponse.getExceptionId().equals("JwtAccessTokenExpiredException")) {
+      refreshToken();
+    }
+    if (errorResponse.getExceptionId().equals("JwtRefreshTokenExpiredException")) {
+      authenticateService.reject();
+    }
+  }
+
+  private void refreshToken() {
     String refreshToken = SessionUtils.getRefreshToken(VaadinSession.getCurrent());
     log.info("refreshToken [refreshToken: {}]", refreshToken);
     String url = createAuthUrl(AUTH_URL_REFRESH_TOKEN);
@@ -130,23 +161,7 @@ public class RestService {
         .refreshToken(refreshToken)
         .build();
     SignInResponse signInResponse = post(url, refreshTokenRequest, SignInResponse.class);
-    authenticateActualUser(signInResponse.getAccessToken(), signInResponse.getRefreshToken());
-    //setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), signInClient.isSaveUser());
-    //setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), signInClient.isSaveUser());
-  }
-
-  public void authenticateActualUser(String accessToken, String refreshToken) {
-    CurrentUser currentUser = getCurrenUser(accessToken);
-    SecurityUtils.createAuthentication(currentUser);
-    VaadinSession vaadinSession = VaadinSession.getCurrent();
-    SessionUtils.setAccessToken(vaadinSession, accessToken);
-    SessionUtils.setRefreshToken(vaadinSession, refreshToken);
-  }
-
-  public CurrentUser getCurrenUser(String accessToken) {
-    String url = createAuthUrl(AUTH_URL_CURRENTUSER);
-    CurrentUser currentUser = getWithToken(url, accessToken, CurrentUser.class);
-    log.info("currentUser [currentUser: {}]", currentUser);
-    return currentUser;
+    CurrentUser currentUser = getCurrenUser(signInResponse.getAccessToken());
+    authenticateService.refreshToken(currentUser, signInResponse);
   }
 }

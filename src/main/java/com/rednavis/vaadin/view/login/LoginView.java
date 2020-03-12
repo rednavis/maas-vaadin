@@ -8,6 +8,7 @@ import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.dashboard.DashboardView;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -16,21 +17,19 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 @PageTitle(PAGE_LOGIN_TITLE)
 @Route(PAGE_LOGIN_URL)
-@RouteAlias("")
 @Tag("login-view")
 @JsModule("./styles/shared-styles.js")
 @JsModule("./src/view/login/login-view.js")
@@ -47,7 +46,7 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
   @Id("btnSignIn")
   private Button btnSignIn;
   @Id("username")
-  private EmailField username;
+  private TextField username;
   @Id("password")
   private PasswordField password;
   private final Binder<SignInClient> signInClientBinder;
@@ -99,5 +98,8 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
         }
       }
     });
+
+    username.addKeyUpListener(Key.ENTER, event -> btnSignIn.click());
+    password.addKeyUpListener(Key.ENTER, event -> btnSignIn.click());
   }
 }

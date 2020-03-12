@@ -10,14 +10,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @RequiredArgsConstructor
 public class RestConfig {
-
-  private final CustomErrorHandler customErrorHandler;
 
   /**
    * restTemplate.
@@ -29,17 +27,17 @@ public class RestConfig {
   public RestTemplate restTemplate(RestTemplateBuilder builder) {
     return builder
         .requestFactory(new RequestFactorySupplier())
-        //.errorHandler(customErrorHandler)
         .additionalInterceptors(List.of(new HeaderHttpRequestInterceptor(),
             new LogHttpRequestInterceptor()))
         .build();
   }
 
+  //https://github.com/spring-projects/spring-framework/issues/21321
   class RequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
     @Override
     public ClientHttpRequestFactory get() {
-      return new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
+      return new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory());
     }
   }
 }

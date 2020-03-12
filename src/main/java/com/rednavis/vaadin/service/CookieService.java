@@ -8,7 +8,7 @@ import javax.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CookieService {
+class CookieService {
 
   /**
    * addCookie.

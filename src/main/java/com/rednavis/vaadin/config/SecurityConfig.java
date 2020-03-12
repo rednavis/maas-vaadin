@@ -2,6 +2,7 @@ package com.rednavis.vaadin.config;
 
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_URL;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_ROOT;
+import static com.rednavis.vaadin.util.ConstantUtils.PAGE_SIGNOUT;
 
 import com.rednavis.shared.dto.user.RoleEnum;
 import com.rednavis.shared.util.EnumUtils;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Require login to access internal pages and configure login form.
@@ -24,10 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .csrf().disable()
-        .formLogin().disable()
         .httpBasic().disable()
-        // Register our CustomRequestCache, that saves unauthorized access attempts, so
-        // the user is redirected after login.
+        .formLogin().loginPage(PAGE_ROOT + PAGE_LOGIN_URL)
+        .and()
+        .logout().logoutRequestMatcher(new AntPathRequestMatcher(PAGE_ROOT + PAGE_SIGNOUT))
+        .logoutSuccessUrl(PAGE_ROOT + PAGE_LOGIN_URL).invalidateHttpSession(true).deleteCookies("JSESSIONID")
+        .and()
+        // Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
         .requestCache().requestCache(new CustomRequestCache())
         .and()
         .authorizeRequests()

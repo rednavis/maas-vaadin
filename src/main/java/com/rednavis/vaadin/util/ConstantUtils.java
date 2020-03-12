@@ -15,6 +15,7 @@ public class ConstantUtils {
   public static final String PAGE_ERROR500_TITLE = "Internal Server Error";
 
   public static final String PAGE_ROOT = "/";
+  public static final String PAGE_SIGNOUT = "signOut";
 
   public static final String PAGE_LOGIN_TITLE = "Login";
   public static final String PAGE_LOGIN_URL = "loginView";

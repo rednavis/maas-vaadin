@@ -6,6 +6,7 @@ import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.view.error.AccessDeniedView;
 import com.rednavis.vaadin.view.error.CustomRouteNotFoundError;
 import com.rednavis.vaadin.view.login.LoginView;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.shared.ApplicationConstants;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 /**
  * SecurityUtils takes care of all such static operations that have to do with security and querying rights from different beans of the UI.
@@ -106,5 +108,9 @@ public class SecurityUtils {
     final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
     return parameterValue != null
         && Stream.of(RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
+  }
+
+  public static void signOut() {
+    new SecurityContextLogoutHandler().logout(VaadinServletRequest.getCurrent(), null, null);
   }
 }
