@@ -1,10 +1,9 @@
 package com.rednavis.vaadin.config;
 
-import static com.rednavis.vaadin.util.CookieEnum.ACCESS_TOKEN;
-
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.annotation.AccessToken;
 import com.rednavis.vaadin.annotation.ActualUser;
+import com.rednavis.vaadin.util.SessionUtils;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +47,6 @@ public class ActualUserConfig {
   @Bean
   @VaadinSessionScope
   public AccessToken getAccessToken() {
-    return () -> {
-      VaadinSession vaadinSession = VaadinSession.getCurrent();
-      return (String) vaadinSession.getAttribute(ACCESS_TOKEN.name());
-    };
+    return () -> SessionUtils.getAccessToken(VaadinSession.getCurrent());
   }
 }

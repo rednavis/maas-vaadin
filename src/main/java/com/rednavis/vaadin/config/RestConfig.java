@@ -29,7 +29,7 @@ public class RestConfig {
   public RestTemplate restTemplate(RestTemplateBuilder builder) {
     return builder
         .requestFactory(new RequestFactorySupplier())
-        .errorHandler(customErrorHandler)
+        //.errorHandler(customErrorHandler)
         .additionalInterceptors(List.of(new HeaderHttpRequestInterceptor(),
             new LogHttpRequestInterceptor()))
         .build();

@@ -1,8 +1,6 @@
 package com.rednavis.vaadin.config;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.rednavis.shared.rest.ApiResponse;
 import com.rednavis.shared.rest.response.ErrorResponse;
 import com.vaadin.flow.component.notification.Notification;
 import java.io.IOException;
@@ -33,10 +31,12 @@ public class CustomErrorHandler implements ResponseErrorHandler {
   public void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
     String responseAsString = StreamUtils.copyToString(clientHttpResponse.getBody(), Charset.defaultCharset());
     log.error("Rest error from MAAS-API [Response body: {}]", responseAsString);
-    ApiResponse<ErrorResponse> errorResponseApiResponse = gson.fromJson(responseAsString,
-        new TypeToken<ApiResponse<ErrorResponse>>() {
-        }.getType());
-    Notification.show(errorResponseApiResponse.getPayloads().getMessage());
+    ErrorResponse errorResponse = gson.fromJson(responseAsString, ErrorResponse.class);
+    Notification.show(errorResponse.getMessage());
+
+    if (errorResponse.getExceptionId().equals("JwtExpiredException")) {
+
+    }
   }
 
   @Override

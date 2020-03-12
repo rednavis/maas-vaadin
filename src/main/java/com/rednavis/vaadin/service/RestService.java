@@ -2,21 +2,27 @@ package com.rednavis.vaadin.service;
 
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_CURRENTUSER;
+import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_REFRESH_TOKEN;
+import static com.rednavis.shared.util.RestUrlUtils.USER_URL;
 import static com.rednavis.shared.util.StringUtils.BEARER_SPACE;
 
-import com.rednavis.shared.rest.ApiResponse;
+import com.google.gson.Gson;
+import com.rednavis.shared.rest.request.RefreshTokenRequest;
+import com.rednavis.shared.rest.response.ErrorResponse;
+import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.shared.security.CurrentUser;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import com.rednavis.vaadin.util.SecurityUtils;
+import com.rednavis.vaadin.util.SessionUtils;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.server.VaadinSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -25,16 +31,13 @@ import org.springframework.web.client.RestTemplate;
 public class RestService {
 
   private final RestTemplate restTemplate;
+  private final Gson gson;
 
   @Value("${maas.api.server}")
   private String maasApiServer;
 
-  public String createAuthUrl(String restPoint) {
-    return maasApiServer + AUTH_URL + restPoint;
-  }
-
-  public <R> ApiResponse<R> get(String url, Class<R> responseClass) {
-    return restTemplate.exchange(url, HttpMethod.GET, null, typeReference(responseClass))
+  public <R> R get(String url, Class<R> responseClass) {
+    return restTemplate.exchange(url, HttpMethod.GET, null, responseClass)
         .getBody();
   }
 
@@ -47,12 +50,22 @@ public class RestService {
    * @param <R>           R
    * @return
    */
-  public <R> ApiResponse<R> getWithToken(String url, String token, Class<R> responseClass) {
+  public <R> R getWithToken(String url, String token, Class<R> responseClass) {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
     HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
-    return restTemplate.exchange(url, HttpMethod.GET, requestEntity, typeReference(responseClass))
-        .getBody();
+    try {
+      return restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      log.error("RestClientResponseException {} ", e.getMessage());
+      ErrorResponse errorResponse = gson.fromJson(e.getResponseBodyAsString(), ErrorResponse.class);
+      Notification.show(errorResponse.getMessage());
+      if (errorResponse.getExceptionId().equals("JwtExpiredException")) {
+        refreshToken();
+      }
+      return null;
+    }
   }
 
   /**
@@ -65,10 +78,9 @@ public class RestService {
    * @param <R>           R
    * @return
    */
-  public <T, R> ApiResponse<R> post(String url, T request, Class<R> responseClass) {
+  public <T, R> R post(String url, T request, Class<R> responseClass) {
     HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
-    ParameterizedTypeReference<ApiResponse<R>> typeRef = typeReference(responseClass);
-    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, typeRef)
+    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
         .getBody();
   }
 
@@ -83,40 +95,20 @@ public class RestService {
    * @param <R>           R
    * @return
    */
-  public <T, R> ApiResponse<R> postWithToken(String url, T request, String token, Class<R> responseClass) {
+  public <T, R> R postWithToken(String url, T request, String token, Class<R> responseClass) {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
     HttpEntity<T> requestEntity = new HttpEntity<>(request, httpHeaders);
-    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, typeReference(responseClass))
+    return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseClass)
         .getBody();
   }
 
-  /**
-   * getCurrenUser.
-   *
-   * @param accessToken accessToken
-   * @return
-   */
-  public CurrentUser getCurrenUser(String accessToken) {
-    String url = createAuthUrl(AUTH_URL_CURRENTUSER);
-    ApiResponse<CurrentUser> currentUserApiResponse = getWithToken(url, accessToken, CurrentUser.class);
-    CurrentUser currentUser = currentUserApiResponse.getPayloads();
-    log.info("currentUser [currentUser: {}]", currentUser);
-    return currentUser;
+  public String createAuthUrl(String restPoint) {
+    return maasApiServer + AUTH_URL + restPoint;
   }
 
-  private <R> ParameterizedTypeReference<ApiResponse<R>> typeReference(Class<R> responseClass) {
-    return new ParameterizedTypeReference<>() {
-      @Override
-      public Type getType() {
-        Type type = super.getType();
-        if (type instanceof ParameterizedType) {
-          Type[] responseWrapperActualTypes = {responseClass};
-          return TypeUtils.parameterize(ApiResponse.class, responseWrapperActualTypes);
-        }
-        return type;
-      }
-    };
+  public String createUserUrl(String restPoint) {
+    return maasApiServer + USER_URL + restPoint;
   }
 
   private HttpHeaders createAuthorizationHeaders(String accessToken) {
@@ -128,5 +120,33 @@ public class RestService {
     HttpHeaders requestHeaders = new HttpHeaders();
     requestHeaders.add(HttpHeaders.AUTHORIZATION, authorizationHeader);
     return requestHeaders;
+  }
+
+  public void refreshToken() {
+    String refreshToken = SessionUtils.getRefreshToken(VaadinSession.getCurrent());
+    log.info("refreshToken [refreshToken: {}]", refreshToken);
+    String url = createAuthUrl(AUTH_URL_REFRESH_TOKEN);
+    RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.builder()
+        .refreshToken(refreshToken)
+        .build();
+    SignInResponse signInResponse = post(url, refreshTokenRequest, SignInResponse.class);
+    authenticateActualUser(signInResponse.getAccessToken(), signInResponse.getRefreshToken());
+    //setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), signInClient.isSaveUser());
+    //setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), signInClient.isSaveUser());
+  }
+
+  public void authenticateActualUser(String accessToken, String refreshToken) {
+    CurrentUser currentUser = getCurrenUser(accessToken);
+    SecurityUtils.createAuthentication(currentUser);
+    VaadinSession vaadinSession = VaadinSession.getCurrent();
+    SessionUtils.setAccessToken(vaadinSession, accessToken);
+    SessionUtils.setRefreshToken(vaadinSession, refreshToken);
+  }
+
+  public CurrentUser getCurrenUser(String accessToken) {
+    String url = createAuthUrl(AUTH_URL_CURRENTUSER);
+    CurrentUser currentUser = getWithToken(url, accessToken, CurrentUser.class);
+    log.info("currentUser [currentUser: {}]", currentUser);
+    return currentUser;
   }
 }

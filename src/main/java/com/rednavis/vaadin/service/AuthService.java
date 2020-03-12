@@ -4,8 +4,6 @@ import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_SIGNIN;
 import static com.rednavis.vaadin.util.CookieEnum.ACCESS_TOKEN;
 import static com.rednavis.vaadin.util.CookieEnum.REFRESH_TOKEN;
 
-import com.rednavis.shared.rest.ApiResponse;
-import com.rednavis.shared.rest.request.RefreshTokenRequest;
 import com.rednavis.shared.rest.request.SignInRequest;
 import com.rednavis.shared.rest.request.SignUpRequest;
 import com.rednavis.shared.rest.response.SignInResponse;
@@ -13,6 +11,7 @@ import com.rednavis.shared.rest.response.SignUpResponse;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.util.SecurityUtils;
+import com.rednavis.vaadin.util.SessionUtils;
 import com.vaadin.flow.server.VaadinSession;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +40,11 @@ public class AuthService {
         .userName(signInClient.getUserName())
         .password(signInClient.getPassword())
         .build();
-    ApiResponse<SignInResponse> signInResponseApiResponse = restService.post(url, signInRequest, SignInResponse.class);
-    if (signInResponseApiResponse.isSuccess()) {
-      SignInResponse signInResponse = signInResponseApiResponse.getPayloads();
-      authenticateActualUser(signInResponse.getAccessToken());
-      setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), signInClient.isSaveUser());
-      setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), signInClient.isSaveUser());
-    }
-    return signInResponseApiResponse.isSuccess();
+    SignInResponse signInResponse = restService.post(url, signInRequest, SignInResponse.class);
+    restService.authenticateActualUser(signInResponse.getAccessToken(), signInResponse.getRefreshToken());
+    setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), signInClient.isSaveUser());
+    setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), signInClient.isSaveUser());
+    return true;
   }
 
   /**
@@ -58,15 +54,17 @@ public class AuthService {
    */
   public void signInFromCookie(VaadinSession vaadinSession) {
     Cookie accessCookie = cookieService.getCookie(ACCESS_TOKEN);
-    if (accessCookie != null) {
+    Cookie refreshCookie = cookieService.getCookie(REFRESH_TOKEN);
+    if (accessCookie != null && refreshCookie != null) {
       log.info("AccessCookies exists");
       CurrentUser currentUser = restService.getCurrenUser(accessCookie.getValue());
       SecurityUtils.createAuthentication(currentUser);
-      vaadinSession.setAttribute(ACCESS_TOKEN.name(), accessCookie.getValue());
+      SessionUtils.setAccessToken(vaadinSession, accessCookie.getValue());
+      SessionUtils.setRefreshToken(vaadinSession, refreshCookie.getValue());
     }
   }
 
-  public ApiResponse<SignUpResponse> signUp(SignUpRequest signUpRequest) {
+  public SignUpResponse signUp(SignUpRequest signUpRequest) {
     return null;
   }
 
@@ -75,22 +73,12 @@ public class AuthService {
    */
   public void signOut() {
     VaadinSession vaadinSession = VaadinSession.getCurrent();
-    vaadinSession.setAttribute(ACCESS_TOKEN.name(), null);
+    SessionUtils.setAccessToken(vaadinSession, null);
+    SessionUtils.setRefreshToken(vaadinSession, null);
 
     cookieService.removeCookie(ACCESS_TOKEN);
     cookieService.removeCookie(REFRESH_TOKEN);
     SecurityContextHolder.getContext().setAuthentication(null);
-  }
-
-  public ApiResponse<SignUpResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
-    return null;
-  }
-
-  private void authenticateActualUser(String accessToken) {
-    CurrentUser currentUser = restService.getCurrenUser(accessToken);
-    SecurityUtils.createAuthentication(currentUser);
-    VaadinSession vaadinSession = VaadinSession.getCurrent();
-    vaadinSession.setAttribute(ACCESS_TOKEN.name(), accessToken);
   }
 
   private void setAccessToken(String accessToken, int accessTokenExpiration, boolean saveUser) {
