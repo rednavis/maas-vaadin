@@ -25,20 +25,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .csrf().disable()
-        .csrf().disable()
+        .cors().disable()
         .httpBasic().disable()
         .formLogin().loginPage(PAGE_ROOT + PAGE_LOGIN_URL)
         .and()
         .logout().logoutRequestMatcher(new AntPathRequestMatcher(PAGE_ROOT + PAGE_SIGNOUT))
-        .logoutSuccessUrl(PAGE_ROOT + PAGE_LOGIN_URL).invalidateHttpSession(true).deleteCookies("JSESSIONID")
+        .logoutSuccessUrl(PAGE_ROOT + PAGE_LOGIN_URL)
+        .invalidateHttpSession(true).deleteCookies("JSESSIONID")
         .and()
-        // Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
+        //Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
         .requestCache().requestCache(new CustomRequestCache())
         .and()
         .authorizeRequests()
         // Allow all flow internal requests.
         .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-        .mvcMatchers(PAGE_ROOT, PAGE_ROOT + PAGE_LOGIN_URL).permitAll()
+        .mvcMatchers(PAGE_ROOT + PAGE_LOGIN_URL).permitAll()
         // Allow all requests by logged in users.
         .anyRequest().hasAnyAuthority(EnumUtils.getNames(RoleEnum.class));
   }

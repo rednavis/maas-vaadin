@@ -1,6 +1,6 @@
 package com.rednavis.vaadin.config.listener;
 
-import com.rednavis.vaadin.exceptions.AccessDeniedException;
+import com.rednavis.vaadin.exceptions.ForbiddenError;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.component.OfflineBanner;
@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MaasVaadinInitListener implements VaadinServiceInitListener {
 
-  private final AuthService authService;
+  private final transient AuthService authService;
 
   @Override
   public void serviceInit(ServiceInitEvent event) {
@@ -69,7 +69,7 @@ public class MaasVaadinInitListener implements VaadinServiceInitListener {
     boolean accessGranted = SecurityUtils.isAccessGranted(event.getNavigationTarget());
     if (!accessGranted) {
       if (SecurityUtils.isUserLoggedIn()) {
-        event.rerouteToError(AccessDeniedException.class);
+        event.rerouteToError(ForbiddenError.class);
       } else {
         event.rerouteTo(LoginView.class);
       }

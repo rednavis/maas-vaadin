@@ -1,3 +1,11 @@
 maas:
   api:
     server: http://localhost:8081
+
+info:
+  rednavis:
+    email: info@rednavis.com
+
+logging:
+  level:
+    org.springframework.security: DEBUG

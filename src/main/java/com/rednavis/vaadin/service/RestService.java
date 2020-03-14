@@ -12,12 +12,12 @@ import com.rednavis.shared.rest.response.ErrorResponse;
 import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.exceptions.MaasVaadinException;
+import com.rednavis.vaadin.property.MaasProperty;
 import com.rednavis.vaadin.util.SessionUtils;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,10 +32,8 @@ class RestService {
 
   private final RestTemplate restTemplate;
   private final AuthenticateService authenticateService;
+  private final MaasProperty maasProperty;
   private final Gson gson;
-
-  @Value("${maas.api.server}")
-  private String maasApiServer;
 
   public <R> R get(String url, Class<R> responseClass) {
     try {
@@ -115,11 +113,13 @@ class RestService {
   }
 
   public String createAuthUrl(String restPoint) {
-    return maasApiServer + AUTH_URL + restPoint;
+    return maasProperty.getApi()
+        .getServer() + AUTH_URL + restPoint;
   }
 
   public String createUserUrl(String restPoint) {
-    return maasApiServer + USER_URL + restPoint;
+    return maasProperty.getApi()
+        .getServer() + USER_URL + restPoint;
   }
 
   public CurrentUser getCurrenUser(String accessToken) {

@@ -20,27 +20,25 @@ class AuthenticateService {
 
   private final CookieService cookieService;
 
-  public void authenticate(CurrentUser currentUser, String accessToken, String refreshToken) {
-    SecurityUtils.createAuthentication(currentUser);
-    VaadinSession vaadinSession = VaadinSession.getCurrent();
-    SessionUtils.setAccessToken(vaadinSession, accessToken);
-    SessionUtils.setRefreshToken(vaadinSession, refreshToken);
+  public void authenticate(CurrentUser currentUser, SignInResponse signInResponse, boolean saveUser) {
+    authenticateSession(currentUser, signInResponse.getAccessToken(), signInResponse.getRefreshToken());
+    setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), saveUser);
+    setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), saveUser);
   }
 
   public void reject() {
+    cookieService.removeCookie(ACCESS_TOKEN);
+    cookieService.removeCookie(REFRESH_TOKEN);
+
     VaadinSession vaadinSession = VaadinSession.getCurrent();
     SessionUtils.setAccessToken(vaadinSession, null);
     SessionUtils.setRefreshToken(vaadinSession, null);
 
-    cookieService.removeCookie(ACCESS_TOKEN);
-    cookieService.removeCookie(REFRESH_TOKEN);
-    SecurityUtils.signOut();
-
-    //getUI().ifPresent(ui -> ui.navigate(LoginView.class));
+    SecurityUtils.reject();
   }
 
   public void refreshToken(CurrentUser currentUser, SignInResponse signInResponse) {
-    authenticate(currentUser, signInResponse.getAccessToken(), signInResponse.getRefreshToken());
+    authenticateSession(currentUser, signInResponse.getAccessToken(), signInResponse.getRefreshToken());
 
     Cookie accessCookie = cookieService.getCookie(ACCESS_TOKEN);
     setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), accessCookie != null);
@@ -48,7 +46,35 @@ class AuthenticateService {
     setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), refreshCookie != null);
   }
 
-  public void setAccessToken(String accessToken, int accessTokenExpiration, boolean saveUser) {
+  public void signInFromCookie(CurrentUser currentUser, VaadinSession vaadinSession) {
+    //String accessToken = SessionUtils.getAccessToken(vaadinSession);
+    //if (!isNullOrBlank(accessToken)) {
+    //  CurrentUser currentUser = restService.getCurrenUser(accessToken);
+    //  authenticateService.signInFromCookie(currentUser, vaadinSession);
+    //}
+    //
+    //SecurityUtils.createAuthentication(currentUser);
+    //VaadinSession vaadinSession = VaadinSession.getCurrent();
+    //SessionUtils.setAccessToken(vaadinSession, accessToken);
+    //SessionUtils.setRefreshToken(vaadinSession, refreshToken);
+    //
+    //Cookie accessCookie = cookieService.getCookie(ACCESS_TOKEN);
+    //Cookie refreshCookie = cookieService.getCookie(REFRESH_TOKEN);
+    //if (accessCookie != null && refreshCookie != null) {
+    //  log.info("AccessCookies exists");
+    //  SessionUtils.setAccessToken(vaadinSession, accessCookie.getValue());
+    //  SessionUtils.setRefreshToken(vaadinSession, refreshCookie.getValue());
+    //}
+  }
+
+  private void authenticateSession(CurrentUser currentUser, String accessToken, String refreshToken) {
+    SecurityUtils.authenticate(currentUser);
+    VaadinSession vaadinSession = VaadinSession.getCurrent();
+    SessionUtils.setAccessToken(vaadinSession, accessToken);
+    SessionUtils.setRefreshToken(vaadinSession, refreshToken);
+  }
+
+  private void setAccessToken(String accessToken, int accessTokenExpiration, boolean saveUser) {
     if (saveUser) {
       cookieService.addCookie(ACCESS_TOKEN, accessToken, accessTokenExpiration);
     } else {
@@ -56,22 +82,11 @@ class AuthenticateService {
     }
   }
 
-  public void setRefreshToken(String refreshToken, int refreshTokenExpiration, boolean saveUser) {
+  private void setRefreshToken(String refreshToken, int refreshTokenExpiration, boolean saveUser) {
     if (saveUser) {
       cookieService.addCookie(REFRESH_TOKEN, refreshToken, refreshTokenExpiration);
     } else {
       cookieService.removeCookie(REFRESH_TOKEN);
-    }
-  }
-
-  public void signInFromCookie(CurrentUser currentUser, VaadinSession vaadinSession) {
-    Cookie accessCookie = cookieService.getCookie(ACCESS_TOKEN);
-    Cookie refreshCookie = cookieService.getCookie(REFRESH_TOKEN);
-    if (accessCookie != null && refreshCookie != null) {
-      log.info("AccessCookies exists");
-      SecurityUtils.createAuthentication(currentUser);
-      SessionUtils.setAccessToken(vaadinSession, accessCookie.getValue());
-      SessionUtils.setRefreshToken(vaadinSession, refreshCookie.getValue());
     }
   }
 }

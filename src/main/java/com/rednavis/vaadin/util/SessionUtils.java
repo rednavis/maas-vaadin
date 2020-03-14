@@ -9,19 +9,19 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class SessionUtils {
 
-  public static String getAccessToken(VaadinSession vaadinSession) {
+  public String getAccessToken(VaadinSession vaadinSession) {
     return (String) vaadinSession.getAttribute(ACCESS_TOKEN.name());
   }
 
-  public static String getRefreshToken(VaadinSession vaadinSession) {
+  public String getRefreshToken(VaadinSession vaadinSession) {
     return (String) vaadinSession.getAttribute(REFRESH_TOKEN.name());
   }
 
-  public static void setAccessToken(VaadinSession vaadinSession, String accessToken) {
+  public void setAccessToken(VaadinSession vaadinSession, String accessToken) {
     vaadinSession.setAttribute(ACCESS_TOKEN.name(), accessToken);
   }
 
-  public static void setRefreshToken(VaadinSession vaadinSession, String refreshToken) {
+  public void setRefreshToken(VaadinSession vaadinSession, String refreshToken) {
     vaadinSession.setAttribute(REFRESH_TOKEN.name(), refreshToken);
   }
 }

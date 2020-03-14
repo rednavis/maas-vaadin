@@ -1,11 +1,12 @@
 package com.rednavis.vaadin.util;
 
-import static com.vaadin.flow.server.ServletHelper.RequestType;
-
 import com.rednavis.shared.security.CurrentUser;
-import com.rednavis.vaadin.view.error.AccessDeniedView;
-import com.rednavis.vaadin.view.error.CustomRouteNotFoundError;
+import com.rednavis.vaadin.view.error.Error401View;
+import com.rednavis.vaadin.view.error.Error403View;
+import com.rednavis.vaadin.view.error.Error404View;
+import com.rednavis.vaadin.view.error.Error500View;
 import com.rednavis.vaadin.view.login.LoginView;
+import com.vaadin.flow.server.ServletHelper;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.shared.ApplicationConstants;
 import java.util.Arrays;
@@ -34,12 +35,31 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 public class SecurityUtils {
 
   /**
+   * getCurrentUser.
+   *
+   * @return
+   */
+  public CurrentUser getCurrentUser() {
+    log.info("getCurrentUser");
+    // Anonymous or no authentication.
+    CurrentUser currentUser = null;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      Object principal = authentication.getPrincipal();
+      if (principal instanceof CurrentUser) {
+        currentUser = (CurrentUser) authentication.getPrincipal();
+      }
+    }
+    return currentUser;
+  }
+
+  /**
    * createAuthentication.
    *
    * @param currentUser currentUser
    */
-  public void createAuthentication(CurrentUser currentUser) {
-    log.info("createAuthentication [currentUser: {}]", currentUser);
+  public void authenticate(CurrentUser currentUser) {
+    log.info("authenticate [currentUser: {}]", currentUser);
     Collection<? extends GrantedAuthority> authorities = currentUser.getRoles()
         .stream()
         .map(role -> new SimpleGrantedAuthority(role.name()))
@@ -50,15 +70,26 @@ public class SecurityUtils {
   }
 
   /**
+   * reject.
+   */
+  public void reject() {
+    log.info("reject");
+    new SecurityContextLogoutHandler().logout(VaadinServletRequest.getCurrent(), null, null);
+  }
+
+  /**
    * Checks if access is granted for the current user for the given secured view, defined by the view class.
    *
    * @param securedClass View class
    * @return true if access is granted, false otherwise.
    */
-  public static boolean isAccessGranted(Class<?> securedClass) {
+  public boolean isAccessGranted(Class<?> securedClass) {
+    log.info("isAccessGranted");
     final boolean publicView = LoginView.class.equals(securedClass)
-        || AccessDeniedView.class.equals(securedClass)
-        || CustomRouteNotFoundError.class.equals(securedClass);
+        || Error401View.class.equals(securedClass)
+        || Error403View.class.equals(securedClass)
+        || Error404View.class.equals(securedClass)
+        || Error500View.class.equals(securedClass);
 
     // Always allow access to public views
     if (publicView) {
@@ -88,11 +119,12 @@ public class SecurityUtils {
    *
    * @return true if the usisFrameworkInternalRequester is logged in. False otherwise.
    */
-  public static boolean isUserLoggedIn() {
+  public boolean isUserLoggedIn() {
+    log.info("isUserLoggedIn");
     return isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
   }
 
-  private static boolean isUserLoggedIn(Authentication authentication) {
+  private boolean isUserLoggedIn(Authentication authentication) {
     return authentication != null
         && !(authentication instanceof AnonymousAuthenticationToken);
   }
@@ -104,13 +136,10 @@ public class SecurityUtils {
    * @param request {@link HttpServletRequest}
    * @return true if is an internal framework request. False otherwise.
    */
-  public static boolean isFrameworkInternalRequest(HttpServletRequest request) {
+  public boolean isFrameworkInternalRequest(HttpServletRequest request) {
+    log.info("isFrameworkInternalRequest");
     final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
     return parameterValue != null
-        && Stream.of(RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
-  }
-
-  public static void signOut() {
-    new SecurityContextLogoutHandler().logout(VaadinServletRequest.getCurrent(), null, null);
+        && Stream.of(ServletHelper.RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
   }
 }

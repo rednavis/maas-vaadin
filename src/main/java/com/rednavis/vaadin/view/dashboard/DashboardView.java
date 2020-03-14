@@ -37,8 +37,7 @@ public class DashboardView extends Div {
    * DashboardView.
    *
    * @param actualUser  actualUser
-   * @param accessToken accessToken
-   * @param authService authService
+   * @param accessToken accessToken //* @param authService authService
    */
   @Autowired
   public DashboardView(ActualUser actualUser, AccessToken accessToken, AuthService authService, UserService userService) {
@@ -65,9 +64,7 @@ public class DashboardView extends Div {
 
   private Button createLogoutButton() {
     Button logout = new Button("LOGOUT", VaadinIcon.ARROW_RIGHT.create());
-    logout.addClickListener(event -> {
-      authService.signOut();
-    });
+    //logout.addClickListener(event -> authService.signOut());
     return logout;
   }
 }

@@ -38,6 +38,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeEnterObserver {
 
   private final transient AuthService authService;
+  private final Binder<SignInClient> signInClientBinder;
 
   @Id("btnSignByFacebook")
   private Button btnSignByFacebook;
@@ -49,14 +50,11 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
   private TextField username;
   @Id("password")
   private PasswordField password;
-  private final Binder<SignInClient> signInClientBinder;
   @Id("saveUser")
   private Checkbox saveUser;
 
   /**
    * LoginView.
-   *
-   * @param authService authService
    */
   public LoginView(AuthService authService) {
     this.authService = authService;
