@@ -64,7 +64,7 @@ public class DashboardView extends Div {
 
   private Button createLogoutButton() {
     Button logout = new Button("LOGOUT", VaadinIcon.ARROW_RIGHT.create());
-    //logout.addClickListener(event -> authService.signOut());
+    logout.addClickListener(event -> authService.signOut());
     return logout;
   }
 }

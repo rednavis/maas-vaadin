@@ -1,5 +1,6 @@
 package com.rednavis.vaadin.config;
 
+import static com.rednavis.vaadin.util.ConstantUtils.JSESSIONID;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_URL;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_ROOT;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_SIGNOUT;
@@ -25,13 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .csrf().disable()
-        .cors().disable()
-        .httpBasic().disable()
+        //.cors().disable()
+        //.httpBasic().disable()
         .formLogin().loginPage(PAGE_ROOT + PAGE_LOGIN_URL)
         .and()
         .logout().logoutRequestMatcher(new AntPathRequestMatcher(PAGE_ROOT + PAGE_SIGNOUT))
         .logoutSuccessUrl(PAGE_ROOT + PAGE_LOGIN_URL)
-        .invalidateHttpSession(true).deleteCookies("JSESSIONID")
+        .invalidateHttpSession(true).deleteCookies(JSESSIONID)
         .and()
         //Register our CustomRequestCache, that saves unauthorized access attempts, so the user is redirected after login.
         .requestCache().requestCache(new CustomRequestCache())

@@ -2,6 +2,8 @@ package com.rednavis.vaadin.service;
 
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_SIGNIN;
 import static com.rednavis.shared.util.StringUtils.isNullOrBlank;
+import static com.rednavis.vaadin.util.CookieEnum.ACCESS_TOKEN;
+import static com.rednavis.vaadin.util.CookieEnum.REFRESH_TOKEN;
 
 import com.rednavis.shared.rest.request.SignInRequest;
 import com.rednavis.shared.rest.request.SignUpRequest;
@@ -10,6 +12,7 @@ import com.rednavis.shared.rest.response.SignUpResponse;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.dto.SignInClient;
 import com.vaadin.flow.server.VaadinSession;
+import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
   private final RestService restService;
+  private final CookieService cookieService;
   private final AuthenticateService authenticateService;
 
   /**
@@ -42,7 +46,9 @@ public class AuthService {
     }
 
     CurrentUser currentUser = restService.getCurrenUser(signInResponse.getAccessToken());
-    authenticateService.authenticate(currentUser, signInResponse, signInClient.isSaveUser());
+    authenticateService.authenticate(currentUser, signInResponse.getAccessToken(), signInResponse.getRefreshToken());
+    setAccessToken(signInResponse.getAccessToken(), signInResponse.getAccessTokenExpiration(), signInClient.isSaveUser());
+    setRefreshToken(signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpiration(), signInClient.isSaveUser());
     return true;
   }
 
@@ -52,12 +58,24 @@ public class AuthService {
    * @param vaadinSession vaadinSession
    */
   public void signInFromCookie(VaadinSession vaadinSession) {
-    //String accessToken = SessionUtils.getAccessToken(vaadinSession);
-    //String refreshToken = SessionUtils.getAccessToken(vaadinSession);
-    //if (!isNullOrBlank(accessToken)) {
-    //  CurrentUser currentUser = restService.getCurrenUser(accessToken);
-    //  authenticateService.signInFromCookie(currentUser, vaadinSession);
-    //}
+    if (vaadinSession == null) {
+      return;
+    }
+
+    Cookie accessCookie = cookieService.getCookie(ACCESS_TOKEN);
+    Cookie refreshCookie = cookieService.getCookie(REFRESH_TOKEN);
+    if (accessCookie == null || refreshCookie == null) {
+      return;
+    }
+
+    String accessToken = accessCookie.getValue();
+    String refreshToken = refreshCookie.getValue();
+    if (isNullOrBlank(accessToken) || isNullOrBlank(refreshToken)) {
+      return;
+    }
+
+    CurrentUser currentUser = restService.getCurrenUser(accessToken);
+    authenticateService.authenticate(currentUser, accessToken, refreshToken);
   }
 
   public SignUpResponse signUp(SignUpRequest signUpRequest) {
@@ -69,5 +87,21 @@ public class AuthService {
    */
   public void signOut() {
     authenticateService.reject();
+  }
+
+  private void setAccessToken(String accessToken, int accessTokenExpiration, boolean saveUser) {
+    if (saveUser) {
+      cookieService.addCookie(ACCESS_TOKEN, accessToken, accessTokenExpiration);
+    } else {
+      cookieService.removeCookie(ACCESS_TOKEN);
+    }
+  }
+
+  private void setRefreshToken(String refreshToken, int refreshTokenExpiration, boolean saveUser) {
+    if (saveUser) {
+      cookieService.addCookie(REFRESH_TOKEN, refreshToken, refreshTokenExpiration);
+    } else {
+      cookieService.removeCookie(REFRESH_TOKEN);
+    }
   }
 }

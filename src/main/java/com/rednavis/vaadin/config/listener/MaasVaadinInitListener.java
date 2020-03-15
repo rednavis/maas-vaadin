@@ -14,16 +14,16 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.spring.annotation.SpringComponent;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * Adds before enter listener to check access to views. Adds the Offline banner.
  */
 @Slf4j
-@SpringComponent
+@Component
 @RequiredArgsConstructor
 public class MaasVaadinInitListener implements VaadinServiceInitListener {
 
@@ -33,7 +33,10 @@ public class MaasVaadinInitListener implements VaadinServiceInitListener {
   public void serviceInit(ServiceInitEvent event) {
     final AtomicInteger sessionsCount = new AtomicInteger(0);
 
-    //Strange behaviour https://github.com/vaadin/spring/issues/531
+    //Strange behaviour
+    //https://vaadin.com/forum/thread/17604535/com-vaadin-flow-server-vaadinserviceinitlistener
+    //https://github.com/vaadin/spring/issues/531
+    //https://github.com/vaadin/flow/issues/6454
     final VaadinServletService servletService = (VaadinServletService) event.getSource();
     final VaadinServlet vaadinServlet = servletService.getServlet();
     log.info("Service init for {} of type {} with id {}", vaadinServlet.getServletName(), vaadinServlet.getClass().getName(),

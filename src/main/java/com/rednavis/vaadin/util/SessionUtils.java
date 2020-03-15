@@ -10,11 +10,11 @@ import lombok.experimental.UtilityClass;
 public class SessionUtils {
 
   public String getAccessToken(VaadinSession vaadinSession) {
-    return (String) vaadinSession.getAttribute(ACCESS_TOKEN.name());
+    return (vaadinSession != null) ? (String) vaadinSession.getAttribute(ACCESS_TOKEN.name()) : "";
   }
 
   public String getRefreshToken(VaadinSession vaadinSession) {
-    return (String) vaadinSession.getAttribute(REFRESH_TOKEN.name());
+    return (vaadinSession != null) ? (String) vaadinSession.getAttribute(REFRESH_TOKEN.name()) : "";
   }
 
   public void setAccessToken(VaadinSession vaadinSession, String accessToken) {
@@ -23,5 +23,13 @@ public class SessionUtils {
 
   public void setRefreshToken(VaadinSession vaadinSession, String refreshToken) {
     vaadinSession.setAttribute(REFRESH_TOKEN.name(), refreshToken);
+  }
+
+  public void removeAccessToken(VaadinSession vaadinSession) {
+    vaadinSession.setAttribute(ACCESS_TOKEN.name(), null);
+  }
+
+  public void removeRefreshToken(VaadinSession vaadinSession) {
+    vaadinSession.setAttribute(REFRESH_TOKEN.name(), null);
   }
 }

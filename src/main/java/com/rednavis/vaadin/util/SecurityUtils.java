@@ -40,7 +40,6 @@ public class SecurityUtils {
    * @return
    */
   public CurrentUser getCurrentUser() {
-    log.info("getCurrentUser");
     // Anonymous or no authentication.
     CurrentUser currentUser = null;
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +49,7 @@ public class SecurityUtils {
         currentUser = (CurrentUser) authentication.getPrincipal();
       }
     }
+    log.info("getCurrentUser [currentUser: {}]", currentUser);
     return currentUser;
   }
 
@@ -84,7 +84,6 @@ public class SecurityUtils {
    * @return true if access is granted, false otherwise.
    */
   public boolean isAccessGranted(Class<?> securedClass) {
-    log.info("isAccessGranted");
     final boolean publicView = LoginView.class.equals(securedClass)
         || Error401View.class.equals(securedClass)
         || Error403View.class.equals(securedClass)
@@ -93,6 +92,7 @@ public class SecurityUtils {
 
     // Always allow access to public views
     if (publicView) {
+      log.info("isAccessGranted - true");
       return true;
     }
 
@@ -100,18 +100,22 @@ public class SecurityUtils {
 
     // All other views require authentication
     if (!isUserLoggedIn(userAuthentication)) {
+      log.info("isAccessGranted - false");
       return false;
     }
 
     // Allow if no roles are required.
     Secured secured = AnnotationUtils.findAnnotation(securedClass, Secured.class);
     if (secured == null) {
+      log.info("isAccessGranted - true");
       return true;
     }
 
     List<String> allowedRoles = Arrays.asList(secured.value());
-    return userAuthentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+    boolean access = userAuthentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
         .anyMatch(allowedRoles::contains);
+    log.info("isAccessGranted - {}", access);
+    return access;
   }
 
   /**
@@ -120,8 +124,9 @@ public class SecurityUtils {
    * @return true if the usisFrameworkInternalRequester is logged in. False otherwise.
    */
   public boolean isUserLoggedIn() {
-    log.info("isUserLoggedIn");
-    return isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
+    boolean logged = isUserLoggedIn(SecurityContextHolder.getContext().getAuthentication());
+    log.info("isUserLoggedIn - {}", logged);
+    return logged;
   }
 
   private boolean isUserLoggedIn(Authentication authentication) {
@@ -137,7 +142,6 @@ public class SecurityUtils {
    * @return true if is an internal framework request. False otherwise.
    */
   public boolean isFrameworkInternalRequest(HttpServletRequest request) {
-    log.info("isFrameworkInternalRequest");
     final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
     return parameterValue != null
         && Stream.of(ServletHelper.RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
