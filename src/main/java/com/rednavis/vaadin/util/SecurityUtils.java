@@ -6,7 +6,7 @@ import com.rednavis.vaadin.view.error.Error403View;
 import com.rednavis.vaadin.view.error.Error404View;
 import com.rednavis.vaadin.view.error.Error500View;
 import com.rednavis.vaadin.view.login.LoginView;
-import com.vaadin.flow.server.ServletHelper;
+import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.shared.ApplicationConstants;
 import java.util.Arrays;
@@ -144,6 +144,6 @@ public class SecurityUtils {
   public boolean isFrameworkInternalRequest(HttpServletRequest request) {
     final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
     return parameterValue != null
-        && Stream.of(ServletHelper.RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
+        && Stream.of(RequestType.values()).anyMatch(r -> r.getIdentifier().equals(parameterValue));
   }
 }

@@ -2,12 +2,16 @@ package com.rednavis.vaadin.view.login;
 
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_TITLE;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_LOGIN_URL;
-import static com.rednavis.vaadin.util.ConstantUtils.VIEW_PORT;
+import static javax.swing.ScrollPaneConstants.VIEWPORT;
 
+import com.rednavis.shared.dto.user.RoleEnum;
+import com.rednavis.shared.security.CurrentUser;
+import com.rednavis.vaadin.annotation.ActualUser;
 import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.dashboard.DashboardView;
+import com.rednavis.vaadin.view.user.UserView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
@@ -28,15 +32,16 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
+@Viewport(VIEWPORT)
 @PageTitle(PAGE_LOGIN_TITLE)
 @Route(PAGE_LOGIN_URL)
 @Tag("login-view")
 @JsModule("./styles/shared-styles.js")
 @JsModule("./src/view/login/login-view.js")
-@Viewport(VIEW_PORT)
 @Theme(value = Lumo.class, variant = Lumo.LIGHT)
 public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeEnterObserver {
 
+  private final transient ActualUser actualUser;
   private final transient AuthService authService;
   private final Binder<SignInClient> signInClientBinder;
 
@@ -56,7 +61,8 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
   /**
    * LoginView.
    */
-  public LoginView(AuthService authService) {
+  public LoginView(ActualUser actualUser, AuthService authService) {
+    this.actualUser = actualUser;
     this.authService = authService;
 
     signInClientBinder = new Binder<>(SignInClient.class);
@@ -92,7 +98,13 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
       if (signInClientBinder.isValid()) {
         SignInClient signInClient = signInClientBinder.getBean();
         if (authService.signIn(signInClient)) {
-          getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
+          CurrentUser currentUser = actualUser.getCurrentUser();
+          if (currentUser.getRoles().contains(RoleEnum.ROLE_ADMIN)) {
+            getUI().ifPresent(ui -> ui.navigate(UserView.class));
+          }
+          if (currentUser.getRoles().contains(RoleEnum.ROLE_USER)) {
+            getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
+          }
         }
       }
     });

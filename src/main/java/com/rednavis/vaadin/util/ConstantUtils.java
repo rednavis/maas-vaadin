@@ -21,4 +21,12 @@ public class ConstantUtils {
 
   public static final String PAGE_DASHBOARD_TITLE = "Dashboard";
   public static final String PAGE_DASHBOARD_URL = "dashboardView";
+
+  public static final String PAGE_USER_TITLE = "Users";
+  public static final String PAGE_USER_CAPTION = "Users";
+  public static final String PAGE_USER_URL = "userView";
+
+  public static final String PAGE_BOOK_TITLE = "Books";
+  public static final String PAGE_BOOK_CAPTION = "Books";
+  public static final String PAGE_BOOK_URL = "bookView";
 }

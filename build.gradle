@@ -52,7 +52,7 @@ dependencyManagement {
         imports {
             mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
         }
-//        dependency "com.github.appreciated:app-layout-addon:${appLayoutAddonVersion}"
+        dependency "com.github.appreciated:app-layout-addon:${appLayoutAddonVersion}"
 
         dependency "com.google.code.gson:gson:${gsonVersion}"
         dependency "org.apache.httpcomponents:httpclient:${httpСlientVersion}"
@@ -84,7 +84,7 @@ dependencies {
          "org.webjars.bowergithub.webcomponents"]
                 .forEach { group -> exclude(group: group) }
     }
-//    implementation 'com.github.appreciated:app-layout-addon'
+    implementation 'com.github.appreciated:app-layout-addon'
 
     implementation 'com.google.code.gson:gson'
     implementation 'org.apache.httpcomponents:httpclient'
