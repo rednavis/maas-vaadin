@@ -6,6 +6,7 @@ import static javax.swing.ScrollPaneConstants.VIEWPORT;
 
 import com.github.appreciated.app.layout.addons.notification.DefaultNotificationHolder;
 import com.github.appreciated.app.layout.addons.notification.component.NotificationButton;
+import com.github.appreciated.app.layout.addons.notification.entity.DefaultNotification;
 import com.github.appreciated.app.layout.component.appbar.AppBarBuilder;
 import com.github.appreciated.app.layout.component.applayout.LeftLayouts;
 import com.github.appreciated.app.layout.component.builder.AppLayoutBuilder;
@@ -57,6 +58,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsive> 
     this.actualUser = actualUser;
 
     notificationHolder = new DefaultNotificationHolder();
+
     badgeHolder = new DefaultBadgeHolder(5);
 
     prepareListener();
@@ -66,6 +68,12 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsive> 
   private void prepareListener() {
     notificationHolder.addClickListener(notification -> {
     });
+
+    notificationHolder.add(new DefaultNotification("Test1", "Test1"),
+        new DefaultNotification("Test2", "Test2"),
+        new DefaultNotification("Test3", "Test3"),
+        new DefaultNotification("Test4", "Test4")
+    );
   }
 
   private void prepareUI() {

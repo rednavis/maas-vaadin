@@ -10,6 +10,7 @@ import com.rednavis.vaadin.annotation.ActualUser;
 import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
+import com.rednavis.vaadin.view.book.BookView;
 import com.rednavis.vaadin.view.dashboard.DashboardView;
 import com.rednavis.vaadin.view.user.UserView;
 import com.vaadin.flow.component.Key;
@@ -103,7 +104,7 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
             getUI().ifPresent(ui -> ui.navigate(UserView.class));
           }
           if (currentUser.getRoles().contains(RoleEnum.ROLE_USER)) {
-            getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
+            getUI().ifPresent(ui -> ui.navigate(BookView.class));
           }
         }
       }

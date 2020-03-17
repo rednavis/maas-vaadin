@@ -15,7 +15,9 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @PageTitle(PAGE_ERROR403_TITLE)
 @Tag("error-view")
 @JsModule("./src/view/error/error-view.js")
@@ -28,6 +30,7 @@ public class Error403View extends PolymerTemplate<TemplateModel> implements HasE
 
   @Override
   public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<ForbiddenError> parameter) {
+    log.error(ERROR403.name(), parameter.getException());
     return HttpServletResponse.SC_FORBIDDEN;
   }
 

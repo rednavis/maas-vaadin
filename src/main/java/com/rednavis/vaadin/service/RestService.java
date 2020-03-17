@@ -18,6 +18,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -60,6 +61,19 @@ class RestService {
     HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
     try {
       return restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("getWithToken - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <R> R getWithToken(String url, String token, ParameterizedTypeReference<R> responseType) {
+    //request entity is created with request body and headers
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType)
           .getBody();
     } catch (RestClientResponseException e) {
       parseException(e);

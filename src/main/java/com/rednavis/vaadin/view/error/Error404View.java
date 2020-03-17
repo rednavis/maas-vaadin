@@ -15,7 +15,9 @@ import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @PageTitle(PAGE_ERROR404_TITLE)
 @Tag("error-view")
 @JsModule("./src/view/error/error-view.js")
@@ -28,6 +30,7 @@ public class Error404View extends PolymerTemplate<TemplateModel> implements HasE
 
   @Override
   public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<NotFoundException> parameter) {
+    log.error(ERROR404.name(), parameter.getException());
     return HttpServletResponse.SC_NOT_FOUND;
   }
 

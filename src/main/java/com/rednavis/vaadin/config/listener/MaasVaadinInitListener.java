@@ -47,8 +47,10 @@ public class MaasVaadinInitListener implements VaadinServiceInitListener {
         sessionInitEvent -> {
           log.info("New Vaadin session created. Current count is: {}", sessionsCount.incrementAndGet());
           VaadinSession vaadinSession = sessionInitEvent.getSession();
-          vaadinSession.setErrorHandler(errorEvent ->
-              Notification.show("VaadinSession ErrorHandler - " + errorEvent.getThrowable().getMessage()));
+          vaadinSession.setErrorHandler(errorEvent -> {
+            log.error("VaadinSession ErrorHandler - {}", errorEvent.getThrowable().getMessage(), errorEvent.getThrowable());
+            Notification.show("VaadinSession ErrorHandler - " + errorEvent.getThrowable().getMessage());
+          });
           authService.signInFromCookie(vaadinSession);
           log.info("restoreSession - FINISH");
         });

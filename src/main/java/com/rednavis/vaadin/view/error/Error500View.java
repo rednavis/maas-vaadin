@@ -14,7 +14,9 @@ import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @PageTitle(PAGE_ERROR500_TITLE)
 @Tag("error-view")
 @JsModule("./src/view/error/error-view.js")
@@ -27,6 +29,7 @@ public class Error500View extends PolymerTemplate<TemplateModel> implements HasE
 
   @Override
   public int setErrorParameter(BeforeEnterEvent event, ErrorParameter<Exception> parameter) {
+    log.error(ERROR500.name(), parameter.getException());
     return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
   }
 
