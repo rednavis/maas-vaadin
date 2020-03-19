@@ -3,6 +3,7 @@ package com.rednavis.vaadin.service;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_CURRENTUSER;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_REFRESH_TOKEN;
+import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL;
 import static com.rednavis.shared.util.RestUrlUtils.USER_URL;
 import static com.rednavis.shared.util.StringUtils.BEARER_SPACE;
 
@@ -39,6 +40,16 @@ class RestService {
   public <R> R get(String url, Class<R> responseClass) {
     try {
       return restTemplate.exchange(url, HttpMethod.GET, null, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("get - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <R> R get(String url, ParameterizedTypeReference<R> responseType) {
+    try {
+      return restTemplate.exchange(url, HttpMethod.GET, null, responseType)
           .getBody();
     } catch (RestClientResponseException e) {
       parseException(e);
@@ -102,6 +113,17 @@ class RestService {
     }
   }
 
+  public <T, R> R post(String url, T request, ParameterizedTypeReference<R> responseType) {
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+    try {
+      return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("post - something wrong with communication with MaasAPI");
+    }
+  }
+
   /**
    * postWithToken.
    *
@@ -134,6 +156,11 @@ class RestService {
   public String createUserUrl(String restPoint) {
     return maasProperty.getApi()
         .getServer() + USER_URL + restPoint;
+  }
+
+  public String createBookUrl(String restPoint) {
+    return maasProperty.getApi()
+        .getServer() + BOOK_URL + restPoint;
   }
 
   public CurrentUser getCurrenUser(String accessToken) {
