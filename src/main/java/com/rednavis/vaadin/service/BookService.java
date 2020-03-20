@@ -1,9 +1,13 @@
 package com.rednavis.vaadin.service;
 
 import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_COUNT;
+import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_DELETE;
 import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_FINDALL;
+import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_INSERT;
+import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_SAVE;
 
 import com.rednavis.shared.dto.book.Book;
+import com.rednavis.vaadin.property.MaasProperty;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -19,24 +23,44 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BookService {
 
+  private final MaasProperty maasProperty;
   private final RestService restService;
 
-  //public Book insert(Book book) {
-  //  String url = restService.createBookUrl(BOOK_URL_INSERT);
-  //  return restService.post(url, book, Book.class);
-  //}
+  /**
+   * insert.
+   *
+   * @param book book
+   * @return
+   */
+  public Book insert(Book book) {
+    String url = maasProperty.createBookUrl(BOOK_URL_INSERT);
+    return restService.post(url, book, Book.class);
+  }
 
-  //public Book save(Book book) {
-  //  String url = restService.createBookUrl(BOOK_URL_SAVE);
-  //  return restService.post(url, book, Book.class);
-  //}
+  /**
+   * save.
+   *
+   * @param book book
+   * @return
+   */
+  public Book save(Book book) {
+    String url = maasProperty.createBookUrl(BOOK_URL_SAVE);
+    return restService.put(url, book, Book.class);
+  }
 
-  public List<Book> findAll(int page, int size) {
-    String url = restService.createBookUrl(BOOK_URL_FINDALL);
+  /**
+   * findAll.
+   *
+   * @param limit  limit
+   * @param offset offset
+   * @return
+   */
+  public List<Book> findAll(int limit, int offset) {
+    String url = maasProperty.createBookUrl(BOOK_URL_FINDALL);
     try {
       URI builder = new URIBuilder(url)
-          .addParameter("page", String.valueOf(page))
-          .addParameter("size", String.valueOf(size))
+          .addParameter("limit", String.valueOf(limit))
+          .addParameter("offset", String.valueOf(offset))
           .build();
       log.info("findAll uri [url: {}]", builder.toString());
       return restService.get(builder.toString(), new ParameterizedTypeReference<>() {
@@ -47,13 +71,30 @@ public class BookService {
     }
   }
 
+  /**
+   * count.
+   *
+   * @return
+   */
   public long count() {
-    String url = restService.createBookUrl(BOOK_URL_COUNT);
+    String url = maasProperty.createBookUrl(BOOK_URL_COUNT);
     return restService.get(url, Long.class);
   }
 
-  //public void delete(Book book) {
-  //  String url = restService.createBookUrl(BOOK_URL_DELETE);
-  //  restService.post(url, book, String.class);
-  //}
+  /**
+   * delete.
+   *
+   * @param bookId bookId
+   */
+  public void delete(String bookId) {
+    String url = maasProperty.createBookUrl(BOOK_URL_DELETE);
+    try {
+      URI builder = new URIBuilder(url)
+          .addParameter("bookId", bookId)
+          .build();
+      restService.delete(builder.toString(), Void.class);
+    } catch (URISyntaxException e) {
+      log.error("Error parse uri [url: {}]", url);
+    }
+  }
 }

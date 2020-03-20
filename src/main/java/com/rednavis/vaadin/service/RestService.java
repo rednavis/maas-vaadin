@@ -1,10 +1,7 @@
 package com.rednavis.vaadin.service;
 
-import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_CURRENTUSER;
 import static com.rednavis.shared.util.RestUrlUtils.AUTH_URL_REFRESH_TOKEN;
-import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL;
-import static com.rednavis.shared.util.RestUrlUtils.USER_URL;
 import static com.rednavis.shared.util.StringUtils.BEARER_SPACE;
 
 import com.google.gson.Gson;
@@ -57,17 +54,7 @@ class RestService {
     }
   }
 
-  /**
-   * getWithToken.
-   *
-   * @param url           url
-   * @param token         token
-   * @param responseClass responseClass
-   * @param <R>           R
-   * @return
-   */
   public <R> R getWithToken(String url, String token, Class<R> responseClass) {
-    //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
     HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
     try {
@@ -80,7 +67,6 @@ class RestService {
   }
 
   public <R> R getWithToken(String url, String token, ParameterizedTypeReference<R> responseType) {
-    //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
     HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
     try {
@@ -92,16 +78,50 @@ class RestService {
     }
   }
 
-  /**
-   * post.
-   *
-   * @param url           url
-   * @param request       request
-   * @param responseClass responseClass
-   * @param <T>           T
-   * @param <R>           R
-   * @return
-   */
+  public <R> R delete(String url, Class<R> responseClass) {
+    try {
+      return restTemplate.exchange(url, HttpMethod.DELETE, null, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("delete - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <R> R delete(String url, ParameterizedTypeReference<R> responseType) {
+    try {
+      return restTemplate.exchange(url, HttpMethod.DELETE, null, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("delete - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <R> R deleteWithToken(String url, String token, Class<R> responseClass) {
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("deletetWithToken - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <R> R deleteWithToken(String url, String token, ParameterizedTypeReference<R> responseType) {
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity requestEntity = new HttpEntity<>(null, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("deleteWithToken - something wrong with communication with MaasAPI");
+    }
+  }
+
   public <T, R> R post(String url, T request, Class<R> responseClass) {
     HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
     try {
@@ -124,17 +144,6 @@ class RestService {
     }
   }
 
-  /**
-   * postWithToken.
-   *
-   * @param url           url
-   * @param request       request
-   * @param token         token
-   * @param responseClass responseClass
-   * @param <T>           T
-   * @param <R>           R
-   * @return
-   */
   public <T, R> R postWithToken(String url, T request, String token, Class<R> responseClass) {
     //request entity is created with request body and headers
     HttpHeaders httpHeaders = createAuthorizationHeaders(token);
@@ -148,23 +157,69 @@ class RestService {
     }
   }
 
-  public String createAuthUrl(String restPoint) {
-    return maasProperty.getApi()
-        .getServer() + AUTH_URL + restPoint;
+  public <T, R> R postWithToken(String url, T request, String token, ParameterizedTypeReference<R> responseType) {
+    //request entity is created with request body and headers
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("postWithToken - something wrong with communication with MaasAPI");
+    }
   }
 
-  public String createUserUrl(String restPoint) {
-    return maasProperty.getApi()
-        .getServer() + USER_URL + restPoint;
+  public <T, R> R put(String url, T request, Class<R> responseClass) {
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+    try {
+      return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("put - something wrong with communication with MaasAPI");
+    }
   }
 
-  public String createBookUrl(String restPoint) {
-    return maasProperty.getApi()
-        .getServer() + BOOK_URL + restPoint;
+  public <T, R> R put(String url, T request, ParameterizedTypeReference<R> responseType) {
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+    try {
+      return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("put - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <T, R> R putWithToken(String url, T request, String token, Class<R> responseClass) {
+    //request entity is created with request body and headers
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseClass)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("putWithToken - something wrong with communication with MaasAPI");
+    }
+  }
+
+  public <T, R> R putWithToken(String url, T request, String token, ParameterizedTypeReference<R> responseType) {
+    //request entity is created with request body and headers
+    HttpHeaders httpHeaders = createAuthorizationHeaders(token);
+    HttpEntity<T> requestEntity = new HttpEntity<>(request, httpHeaders);
+    try {
+      return restTemplate.exchange(url, HttpMethod.PUT, requestEntity, responseType)
+          .getBody();
+    } catch (RestClientResponseException e) {
+      parseException(e);
+      throw new MaasVaadinException("putWithToken - something wrong with communication with MaasAPI");
+    }
   }
 
   public CurrentUser getCurrenUser(String accessToken) {
-    String url = createAuthUrl(AUTH_URL_CURRENTUSER);
+    String url = maasProperty.createAuthUrl(AUTH_URL_CURRENTUSER);
     CurrentUser currentUser = getWithToken(url, accessToken, CurrentUser.class);
     log.info("currentUser [currentUser: {}]", currentUser);
     return currentUser;
@@ -197,7 +252,7 @@ class RestService {
   private void refreshToken() {
     String refreshToken = SessionUtils.getRefreshToken(VaadinSession.getCurrent());
     log.info("refreshToken [refreshToken: {}]", refreshToken);
-    String url = createAuthUrl(AUTH_URL_REFRESH_TOKEN);
+    String url = maasProperty.createAuthUrl(AUTH_URL_REFRESH_TOKEN);
     RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.builder()
         .refreshToken(refreshToken)
         .build();

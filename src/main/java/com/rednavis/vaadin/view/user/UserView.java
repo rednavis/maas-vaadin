@@ -34,6 +34,12 @@ public class UserView extends PolymerTemplate<TemplateModel> {
   private final transient AccessToken accessToken;
   private final transient UserService userService;
 
+  /**
+   * UserView.
+   *
+   * @param accessToken accessToken
+   * @param userService userService
+   */
   public UserView(AccessToken accessToken, UserService userService) {
     this.accessToken = accessToken;
     this.userService = userService;

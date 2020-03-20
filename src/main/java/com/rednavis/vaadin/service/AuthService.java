@@ -11,6 +11,7 @@ import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.shared.rest.response.SignUpResponse;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.dto.SignInClient;
+import com.rednavis.vaadin.property.MaasProperty;
 import com.vaadin.flow.server.VaadinSession;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
+  private final MaasProperty maasProperty;
   private final RestService restService;
   private final CookieService cookieService;
   private final AuthenticateService authenticateService;
@@ -34,7 +36,7 @@ public class AuthService {
    */
   public boolean signIn(SignInClient signInClient) {
     log.info("signIn [signInClient: {}]", signInClient);
-    String url = restService.createAuthUrl(AUTH_URL_SIGNIN);
+    String url = maasProperty.createAuthUrl(AUTH_URL_SIGNIN);
     SignInRequest signInRequest = SignInRequest.builder()
         .userName(signInClient.getUserName())
         .password(signInClient.getPassword())

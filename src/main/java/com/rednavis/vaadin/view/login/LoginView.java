@@ -11,7 +11,6 @@ import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.view.book.BookView;
-import com.rednavis.vaadin.view.dashboard.DashboardView;
 import com.rednavis.vaadin.view.user.UserView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
@@ -76,7 +75,13 @@ public class LoginView extends PolymerTemplate<TemplateModel> implements BeforeE
   @Override
   public void beforeEnter(BeforeEnterEvent event) {
     if (SecurityUtils.isUserLoggedIn()) {
-      event.forwardTo(DashboardView.class);
+      CurrentUser currentUser = actualUser.getCurrentUser();
+      if (currentUser.getRoles().contains(RoleEnum.ROLE_ADMIN)) {
+        event.forwardTo(UserView.class);
+      }
+      if (currentUser.getRoles().contains(RoleEnum.ROLE_USER)) {
+        event.forwardTo(BookView.class);
+      }
     }
   }
 
