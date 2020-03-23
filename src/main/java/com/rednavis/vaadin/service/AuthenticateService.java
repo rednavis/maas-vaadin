@@ -3,12 +3,12 @@ package com.rednavis.vaadin.service;
 import static com.rednavis.vaadin.util.CookieEnum.ACCESS_TOKEN;
 import static com.rednavis.vaadin.util.CookieEnum.REFRESH_TOKEN;
 
+import javax.servlet.http.Cookie;
 import com.rednavis.shared.rest.response.SignInResponse;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.util.SecurityUtils;
 import com.rednavis.vaadin.util.SessionUtils;
 import com.vaadin.flow.server.VaadinSession;
-import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

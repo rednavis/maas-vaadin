@@ -3,6 +3,7 @@ package com.rednavis.vaadin.view.error;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_ERROR401_TITLE;
 import static com.rednavis.vaadin.view.component.ErrorHttpComponent.ErrorHttpEnum.ERROR401;
 
+import javax.servlet.http.HttpServletResponse;
 import com.rednavis.vaadin.exceptions.UnauthorizedError;
 import com.rednavis.vaadin.property.InfoProperty;
 import com.rednavis.vaadin.view.component.ErrorHttpComponent;
@@ -14,7 +15,6 @@ import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.templatemodel.TemplateModel;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

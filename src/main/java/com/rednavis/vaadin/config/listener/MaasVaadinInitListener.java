@@ -1,5 +1,6 @@
 package com.rednavis.vaadin.config.listener;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import com.rednavis.vaadin.exceptions.ForbiddenError;
 import com.rednavis.vaadin.service.AuthService;
 import com.rednavis.vaadin.util.SecurityUtils;
@@ -14,7 +15,6 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

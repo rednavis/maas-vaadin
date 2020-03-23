@@ -47,7 +47,7 @@ public class MainView extends AppLayoutRouterLayout<LeftLayouts.LeftResponsive> 
   @Getter
   private final DefaultNotificationHolder notificationHolder;
   @Getter
-  private final DefaultBadgeHolder badgeHolder;
+  private final transient DefaultBadgeHolder badgeHolder;
 
   /**
    * MainView.

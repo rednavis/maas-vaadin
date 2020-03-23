@@ -1,8 +1,8 @@
 package com.rednavis.vaadin.config;
 
-import com.rednavis.vaadin.util.SecurityUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.rednavis.vaadin.util.SecurityUtils;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 /**

@@ -6,12 +6,12 @@ import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_FINDALL;
 import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_INSERT;
 import static com.rednavis.shared.util.RestUrlUtils.BOOK_URL_SAVE;
 
-import com.rednavis.shared.dto.book.Book;
-import com.rednavis.vaadin.property.MaasProperty;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
+import com.rednavis.shared.dto.book.Book;
+import com.rednavis.vaadin.property.MaasProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;

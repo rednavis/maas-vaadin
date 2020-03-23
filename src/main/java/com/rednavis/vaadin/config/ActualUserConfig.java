@@ -21,7 +21,7 @@ public class ActualUserConfig {
   @Bean
   @VaadinSessionScope
   public ActualUser actualUser() {
-    return () -> SecurityUtils.getCurrentUser();
+    return SecurityUtils::getCurrentUser;
   }
 
   /**

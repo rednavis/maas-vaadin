@@ -1,10 +1,10 @@
 package com.rednavis.vaadin.service;
 
+import java.util.Arrays;
+import javax.servlet.http.Cookie;
 import com.rednavis.vaadin.util.CookieEnum;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
-import java.util.Arrays;
-import javax.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 @Service

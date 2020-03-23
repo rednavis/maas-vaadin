@@ -1,10 +1,9 @@
 package com.rednavis.vaadin.view.component;
 
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.server.InputStreamFactory;
-import com.vaadin.flow.server.StreamResource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.server.StreamResource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,7 +23,7 @@ public enum ImageResource {
   }
 
   private StreamResource createImage(String fileName) {
-    return new StreamResource(this.name(), (InputStreamFactory) () -> {
+    return new StreamResource(this.name(), () -> {
       try {
         return new FileInputStream("frontend/images/" + fileName);
       } catch (FileNotFoundException e) {

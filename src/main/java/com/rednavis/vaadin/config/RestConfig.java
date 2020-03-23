@@ -1,9 +1,9 @@
 package com.rednavis.vaadin.config;
 
-import com.rednavis.vaadin.config.interceptor.HeaderHttpRequestInterceptor;
-import com.rednavis.vaadin.config.interceptor.LogHttpRequestInterceptor;
 import java.util.List;
 import java.util.function.Supplier;
+import com.rednavis.vaadin.config.interceptor.HeaderHttpRequestInterceptor;
+import com.rednavis.vaadin.config.interceptor.LogHttpRequestInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

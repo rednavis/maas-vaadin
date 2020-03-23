@@ -1,5 +1,11 @@
 package com.rednavis.vaadin.util;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.servlet.http.HttpServletRequest;
 import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.view.error.Error401View;
 import com.rednavis.vaadin.view.error.Error403View;
@@ -9,12 +15,6 @@ import com.rednavis.vaadin.view.login.LoginView;
 import com.vaadin.flow.server.ServletHelper.RequestType;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.shared.ApplicationConstants;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;

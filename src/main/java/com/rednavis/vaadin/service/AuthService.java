@@ -5,6 +5,7 @@ import static com.rednavis.shared.util.StringUtils.isNullOrBlank;
 import static com.rednavis.vaadin.util.CookieEnum.ACCESS_TOKEN;
 import static com.rednavis.vaadin.util.CookieEnum.REFRESH_TOKEN;
 
+import javax.servlet.http.Cookie;
 import com.rednavis.shared.rest.request.SignInRequest;
 import com.rednavis.shared.rest.request.SignUpRequest;
 import com.rednavis.shared.rest.response.SignInResponse;
@@ -13,7 +14,6 @@ import com.rednavis.shared.security.CurrentUser;
 import com.rednavis.vaadin.dto.SignInClient;
 import com.rednavis.vaadin.property.MaasProperty;
 import com.vaadin.flow.server.VaadinSession;
-import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

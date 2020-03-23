@@ -6,6 +6,7 @@ import static com.rednavis.vaadin.util.ConstantUtils.PAGE_DASHBOARD_TITLE;
 import static com.rednavis.vaadin.util.ConstantUtils.PAGE_DASHBOARD_URL;
 import static java.time.Instant.now;
 
+import java.time.format.DateTimeFormatter;
 import com.rednavis.vaadin.annotation.AccessToken;
 import com.rednavis.vaadin.annotation.ActualUser;
 import com.rednavis.vaadin.service.AuthService;
@@ -20,7 +21,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 

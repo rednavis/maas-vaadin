@@ -4,9 +4,9 @@ import static com.rednavis.shared.util.RestUrlUtils.USER_URL_ADMIN;
 import static com.rednavis.shared.util.RestUrlUtils.USER_URL_FINDALL;
 import static com.rednavis.shared.util.RestUrlUtils.USER_URL_USER;
 
+import java.util.List;
 import com.rednavis.shared.dto.user.User;
 import com.rednavis.vaadin.property.MaasProperty;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,8 +50,7 @@ public class UserService {
    */
   public List<User> findAll(String accessToken) {
     String url = maasProperty.createUserUrl(USER_URL_FINDALL);
-    List<User> userList = restService.getWithToken(url, accessToken, new ParameterizedTypeReference<>() {
+    return restService.getWithToken(url, accessToken, new ParameterizedTypeReference<>() {
     });
-    return userList;
   }
 }
