@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "fontawesome-icon": "1.0.4",
-    "@polymer/polymer": "3.2.0",
+    "@polymer/polymer": "3.4.1",
     "@polymer/iron-ajax": "3.0.1",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@vaadin/flow-deps": "./target/frontend"
